@@ -32,6 +32,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   const [locked, setLocked] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [draggingIndex, setDraggingIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const queryClient = useQueryClient()
@@ -141,6 +142,48 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     setShowForm(formOpen)
   }
 
+  function handleDragStart(e: React.DragEvent<HTMLDivElement>, index: number) {
+    setDraggingIndex(index)
+    let target = e.target as HTMLDivElement
+    let rect = target.getBoundingClientRect()
+    let clone = target.cloneNode(true) as HTMLDivElement
+    clone.style.position = "absolute"
+    clone.style.top = "-9999px"
+    clone.style.width = `${rect.width}px`
+    clone.style.height = `${rect.height}px`
+    clone.classList.add("font-mono", "drag-clone")
+    document.body.appendChild(clone)
+    e.dataTransfer.setDragImage(
+      clone,
+      e.clientX - rect.left,
+      e.clientY - rect.top,
+    )
+    target.classList.add("opacity-0")
+  }
+
+  function handleDragEnter(e: React.DragEvent<HTMLDivElement>, index: number) {
+    e.preventDefault()
+    if (draggingIndex === -1) return
+    let target = e.target as HTMLDivElement
+
+    const itemsCopy = [...items]
+    const [draggedItem] = itemsCopy.splice(draggingIndex, 1)
+    itemsCopy.splice(index, 0, draggedItem)
+    setDraggingIndex(index)
+    setItems(itemsCopy)
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault()
+  }
+
+  function handleDragEnd(e: React.DragEvent<HTMLDivElement>, index: number) {
+    let target = e.target as HTMLDivElement
+    target.classList.remove("opacity-0")
+    document.body.querySelector(".drag-clone")?.remove()
+    setDraggingIndex(-1)
+  }
+
   if (isPending) return <div>Loading...</div>
 
   if (isError) return <div>Error: {error.message}</div>
@@ -162,17 +205,20 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           handleToggleAll={handleToggleAll}
         />
       </div>
-      {items.map((item: ChecklistItem) => (
-        <Item
+      {items.map((item: ChecklistItem, index: number) => (
+        <div
           key={item.id}
-          checklistID={checklistID}
-          item={item}
-          locked={locked}
-        />
+          onDragStart={(event) => handleDragStart(event, index)}
+          onDragEnter={(event) => handleDragEnter(event, index)}
+          onDragEnd={(event) => handleDragEnd(event, index)}
+          onDragOver={handleDragOver}
+        >
+          <Item checklistID={checklistID} item={item} locked={locked} />
+        </div>
       ))}
       {locked ? null : (
         <div
-          className={`transition-width mt-2 grid grid-cols-[auto_1fr] items-center rounded-md bg-white shadow-sm delay-150 ease-in-out ${formOpen ? "w-full" : "w-11"}`}
+          className={`mt-2 grid grid-cols-[auto_1fr] items-center rounded-md bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-11"}`}
           onTransitionEnd={handleTranistionEnd}
         >
           <button className="p-3" onClick={handleFormToggle}>

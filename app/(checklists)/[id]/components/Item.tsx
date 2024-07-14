@@ -64,6 +64,7 @@ function Item({ checklistID, item, locked }: ItemProps) {
     <div
       key={item.id}
       className="mt-2 grid grid-cols-[auto_1fr_auto] items-start rounded-md bg-white p-3 shadow-sm"
+      draggable={!locked}
     >
       <input
         type="checkbox"
