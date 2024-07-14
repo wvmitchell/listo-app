@@ -212,6 +212,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           onDragEnter={(event) => handleDragEnter(event, index)}
           onDragEnd={(event) => handleDragEnd(event, index)}
           onDragOver={handleDragOver}
+          className={`${locked ? "" : "cursor-move"}`}
         >
           <Item checklistID={checklistID} item={item} locked={locked} />
         </div>
