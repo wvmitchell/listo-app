@@ -13,9 +13,9 @@ const NewChecklistButton = () => {
   }
 
   return (
-    <div className="fixed bottom-5 right-5">
+    <div className="flex justify-end border-b-[1px] border-slate-500">
       <button onClick={handleNewChecklist}>
-        <PencilSquareIcon className="h-5 w-5 text-slate-500 active:text-slate-700" />
+        <PencilSquareIcon className="mx-5 mb-2 h-5 w-5 text-slate-500 active:text-slate-700" />
       </button>
     </div>
   )

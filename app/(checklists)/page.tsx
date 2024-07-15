@@ -34,6 +34,7 @@ const ChecklistPage = ({ params }: { params: ChecklistParams }) => {
   return (
     <div>
       <div className="grid grid-cols-1 gap-3">
+        <NewChecklistButton />
         {checklists.map((checklist: { [key: string]: any }) => (
           <ChecklistDescription
             key={checklist.id}
@@ -43,7 +44,6 @@ const ChecklistPage = ({ params }: { params: ChecklistParams }) => {
           />
         ))}
       </div>
-      <NewChecklistButton />
     </div>
   )
 }

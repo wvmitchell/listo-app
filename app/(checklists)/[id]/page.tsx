@@ -222,21 +222,26 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           className={`mt-2 grid grid-cols-[auto_1fr] items-center rounded-md bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-11"}`}
           onTransitionEnd={handleTranistionEnd}
         >
-          <button className="p-3" onClick={handleFormToggle}>
-            <PlusCircleIcon className="-ml-0.5 size-6 text-slate-700" />
+          <button className="py-3 pl-2 pr-[7px]" onClick={handleFormToggle}>
+            <PlusCircleIcon className="size-[26px] text-slate-700" />
           </button>
           <form
             onSubmit={handleNewItem}
             hidden={!showForm || !formOpen}
-            className=""
+            className="grid w-full grid-cols-[1fr_auto] gap-2 py-3 pr-3"
           >
             <input
               ref={inputRef}
               type="text"
               name="new-item"
-              className="rounded-sm px-1 outline-none ring-2 ring-slate-300"
+              hidden={!showForm || !formOpen}
+              className="rounded-sm px-1 outline-none"
             />
-            <button type="submit" className="px-2">
+            <button
+              type="submit"
+              hidden={!showForm || !formOpen}
+              className="rounded-sm border border-slate-300 px-2"
+            >
               Add
             </button>
           </form>
