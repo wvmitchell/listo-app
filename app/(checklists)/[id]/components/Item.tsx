@@ -55,7 +55,13 @@ function Item({ checklistID, item, locked }: ItemProps) {
     const itemID = e.target.id
     const checked = e.target.checked
     const content = e.target.nextSibling?.textContent || ""
-    updateItemMutation.mutate({ checklistID, itemID, checked, content, ordering: item.ordering})
+    updateItemMutation.mutate({
+      checklistID,
+      itemID,
+      checked,
+      content,
+      ordering: item.ordering,
+    })
   }
 
   function handleDeleteItem(e: React.MouseEvent<HTMLButtonElement>) {
@@ -66,7 +72,7 @@ function Item({ checklistID, item, locked }: ItemProps) {
   return (
     <div
       key={item.id}
-      className="mt-2 grid grid-cols-[auto_1fr_auto] items-start rounded-md bg-white p-3 shadow-sm"
+      className="mt-1 grid grid-cols-[auto_1fr_auto] items-start rounded-sm bg-white p-3 shadow-sm"
       draggable={!locked}
     >
       <input
@@ -76,7 +82,7 @@ function Item({ checklistID, item, locked }: ItemProps) {
         checked={item.checked}
         className="mt-1 size-4 accent-slate-700"
       />
-      <p className="ml-4">{item.content}</p>
+      <p className="ml-4 text-sm">{item.content}</p>
       {locked ? null : (
         <button id={item.id} onClick={handleDeleteItem}>
           <TrashIcon className="ml-4 size-4" />

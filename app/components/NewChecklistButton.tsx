@@ -13,7 +13,7 @@ const NewChecklistButton = () => {
   }
 
   return (
-    <div className="flex justify-end border-b-[1px] border-slate-500">
+    <div className="flex justify-end">
       <button onClick={handleNewChecklist}>
         <PencilSquareIcon className="mx-5 mb-2 h-5 w-5 text-slate-500 active:text-slate-700" />
       </button>

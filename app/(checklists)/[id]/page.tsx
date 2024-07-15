@@ -5,6 +5,7 @@ import { debounce } from "lodash"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import Item from "./components/Item"
 import ChecklistControls from "./components/ChecklistControls"
+import ChecklistMenu from "./components/ChecklistMenu"
 import { PlusCircleIcon } from "@heroicons/react/24/outline"
 import {
   updateChecklist,
@@ -235,7 +236,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
 
   return (
     <div>
-      <div className="mb-2 grid grid-cols-2">
+      <div className="mb-1 grid grid-cols-[1fr_auto]">
         <input
           type="text"
           name="checklist-name"
@@ -244,7 +245,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           className="w-full bg-transparent text-xl font-bold focus:outline-none"
           disabled={locked}
         />
-        <ChecklistControls
+        <ChecklistMenu
           locked={locked}
           handleLockChecklist={handleLockChecklist}
           handleToggleAll={handleToggleAll}
@@ -264,28 +265,31 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
       ))}
       {locked ? null : (
         <div
-          className={`mt-2 grid grid-cols-[auto_1fr] items-center rounded-md bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-11"}`}
+          className={`mt-1 grid grid-cols-[auto_1fr] items-center rounded-sm bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-10"}`}
           onTransitionEnd={handleTranistionEnd}
         >
-          <button className="py-3 pl-2 pr-[7px]" onClick={handleFormToggle}>
-            <PlusCircleIcon className="size-[26px] text-slate-700" />
+          <button
+            className="py-[0.65rem] pl-2 pr-[7px]"
+            onClick={handleFormToggle}
+          >
+            <PlusCircleIcon className="size-[24px] text-slate-700" />
           </button>
           <form
             onSubmit={handleNewItem}
             hidden={!showForm || !formOpen}
-            className="grid w-full grid-cols-[1fr_auto] gap-2 py-3 pr-3"
+            className="grid w-full grid-cols-[1fr_auto] gap-2 py-2 pr-3"
           >
             <input
               ref={inputRef}
               type="text"
               name="new-item"
               hidden={!showForm || !formOpen}
-              className="rounded-sm px-1 outline-none"
+              className="rounded-sm px-1 text-sm outline-none"
             />
             <button
               type="submit"
               hidden={!showForm || !formOpen}
-              className="rounded-sm border border-slate-300 px-2"
+              className="rounded-sm border border-slate-300 px-2 text-sm"
             >
               Add
             </button>
