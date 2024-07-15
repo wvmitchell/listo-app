@@ -9,6 +9,7 @@ import { PlusCircleIcon } from "@heroicons/react/24/outline"
 import {
   updateChecklist,
   getChecklist,
+  updateItem,
   createItem,
   toggleAllItems,
 } from "@/api/checklistAPI"
@@ -17,6 +18,7 @@ type ChecklistItem = {
   id: string
   content: string
   checked: boolean
+  ordering: number
   created_at: string
   updated_at: string
 }
@@ -60,11 +62,37 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   })
 
   const newItemMutation = useMutation({
-    mutationFn: (variables: { checklistID: string; content: string }) => {
-      return createItem(variables.checklistID, variables.content)
+    mutationFn: (variables: {
+      checklistID: string
+      content: string
+      ordering: number
+    }) => {
+      return createItem(
+        variables.checklistID,
+        variables.content,
+        variables.ordering,
+      )
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklist"] })
+    },
+  })
+
+  const updateItemMutation = useMutation({
+    mutationFn: (variables: {
+      checklistID: string
+      itemID: string
+      ordering: number
+      checked: boolean
+      content: string
+    }) => {
+      return updateItem(
+        variables.checklistID,
+        variables.itemID,
+        variables.checked,
+        variables.content,
+        variables.ordering,
+      )
     },
   })
 
@@ -82,8 +110,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
       setTitle(data.checklist.title)
       setLocked(data.checklist.locked)
       let sorted = data.items.sort(
-        (a: ChecklistItem, b: ChecklistItem) =>
-          Date.parse(a.created_at) - Date.parse(b.created_at),
+        (a: ChecklistItem, b: ChecklistItem) => a.ordering - b.ordering,
       )
       setItems(sorted)
     }
@@ -120,6 +147,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     newItemMutation.mutate({
       checklistID,
       content: formData.get("new-item") as string,
+      ordering: items.length,
     })
     form.reset()
   }
@@ -178,10 +206,27 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   }
 
   function handleDragEnd(e: React.DragEvent<HTMLDivElement>, index: number) {
+    e.preventDefault()
     let target = e.target as HTMLDivElement
     target.classList.remove("opacity-0")
     document.body.querySelector(".drag-clone")?.remove()
     setDraggingIndex(-1)
+    updateItemOrder()
+  }
+
+  function updateItemOrder() {
+    items.forEach((item, index) => {
+      if (item.ordering !== index) {
+        updateItemMutation.mutate({
+          checklistID,
+          itemID: item.id,
+          ordering: index,
+          checked: item.checked,
+          content: item.content,
+        })
+        item.ordering = index
+      }
+    })
   }
 
   if (isPending) return <div>Loading...</div>

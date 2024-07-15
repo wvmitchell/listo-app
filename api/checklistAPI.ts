@@ -91,7 +91,11 @@ async function deleteChecklist(checklistID: string) {
   return await res.json()
 }
 
-async function createItem(checklistID: string, content: string) {
+async function createItem(
+  checklistID: string,
+  content: string,
+  ordering: number,
+) {
   const res = await fetch(`${BASE_URL}/checklist/${checklistID}/item`, {
     method: "POST",
     headers: {
@@ -99,7 +103,7 @@ async function createItem(checklistID: string, content: string) {
       // TODO: replace with actual user ID
       userID: "1",
     },
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ content, ordering }),
   })
 
   if (!res.ok) {
@@ -113,6 +117,7 @@ async function updateItem(
   itemID: string,
   checked: boolean,
   content: string,
+  ordering: number,
 ) {
   const res = await fetch(
     `${BASE_URL}/checklist/${checklistID}/item/${itemID}`,
@@ -123,7 +128,7 @@ async function updateItem(
         // TODO: replace with actual user ID
         userID: "1",
       },
-      body: JSON.stringify({ content, checked }),
+      body: JSON.stringify({ content, checked, ordering }),
     },
   )
 

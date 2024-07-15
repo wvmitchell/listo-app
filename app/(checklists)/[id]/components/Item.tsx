@@ -8,6 +8,7 @@ type ChecklistItem = {
   id: string
   content: string
   checked: boolean
+  ordering: number
   created_at: string
   updated_at: string
 }
@@ -26,12 +27,14 @@ function Item({ checklistID, item, locked }: ItemProps) {
       itemID: string
       checked: boolean
       content: string
+      ordering: number
     }) => {
       return updateItem(
         variables.checklistID,
         variables.itemID,
         variables.checked,
         variables.content,
+        variables.ordering,
       )
     },
     onSuccess: () => {
@@ -52,7 +55,7 @@ function Item({ checklistID, item, locked }: ItemProps) {
     const itemID = e.target.id
     const checked = e.target.checked
     const content = e.target.nextSibling?.textContent || ""
-    updateItemMutation.mutate({ checklistID, itemID, checked, content })
+    updateItemMutation.mutate({ checklistID, itemID, checked, content, ordering: item.ordering})
   }
 
   function handleDeleteItem(e: React.MouseEvent<HTMLButtonElement>) {
