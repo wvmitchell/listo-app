@@ -1,7 +1,7 @@
 "use server"
 
 // base url is the environment variable BASE_URL or http://localhost:3000
-const BASE_URL = process.env.BASE_URL || "http://localhost:8080";
+const BASE_URL = process.env.BASE_URL || "http://localhost:8080"
 
 async function getChecklists() {
   const res = await fetch(`${BASE_URL}/checklists`, {
@@ -11,12 +11,13 @@ async function getChecklists() {
       // TODO: replace with actual user ID
       userID: "1",
     },
-  });
+    cache: "no-store",
+  })
 
   if (!res.ok) {
-    throw new Error(`Failed to get checklists: ${res.status}`);
+    throw new Error(`Failed to get checklists: ${res.status}`)
   }
-  return await res.json();
+  return await res.json()
 }
 
 async function getChecklist(id: string) {
@@ -27,12 +28,12 @@ async function getChecklist(id: string) {
       // TODO: replace with actual user ID
       userID: "1",
     },
-  });
+  })
 
   if (!res.ok) {
-    throw new Error(`Failed to get checklist: ${res.status}`);
+    throw new Error(`Failed to get checklist: ${res.status}`)
   }
-  return await res.json();
+  return await res.json()
 }
 
 async function createChecklist() {
@@ -44,13 +45,13 @@ async function createChecklist() {
       userID: "1",
     },
     body: JSON.stringify({ title: "New Checklist" }),
-  });
+  })
 
   if (!res.ok) {
-    throw new Error(`Failed to create checklist: ${res.status}`);
+    throw new Error(`Failed to create checklist: ${res.status}`)
   }
 
-  return await res.json();
+  return await res.json()
 }
 
 async function updateChecklist(
@@ -66,13 +67,13 @@ async function updateChecklist(
       userID: "1",
     },
     body: JSON.stringify({ title, locked }),
-  });
+  })
 
   if (!res.ok) {
-    throw new Error(`Failed to update checklist: ${res.status}`);
+    throw new Error(`Failed to update checklist: ${res.status}`)
   }
 
-  return await res.json();
+  return await res.json()
 }
 
 async function deleteChecklist(checklistID: string) {
@@ -81,13 +82,13 @@ async function deleteChecklist(checklistID: string) {
     headers: {
       userID: "1",
     },
-  });
+  })
 
   if (!res.ok) {
-    throw new Error(`Failed to delete checklist: ${res.status}`);
+    throw new Error(`Failed to delete checklist: ${res.status}`)
   }
 
-  return await res.json();
+  return await res.json()
 }
 
 async function createItem(checklistID: string, content: string) {
@@ -99,12 +100,12 @@ async function createItem(checklistID: string, content: string) {
       userID: "1",
     },
     body: JSON.stringify({ content }),
-  });
+  })
 
   if (!res.ok) {
-    throw new Error(`Failed to create item: ${res.status}`);
+    throw new Error(`Failed to create item: ${res.status}`)
   }
-  return await res.json();
+  return await res.json()
 }
 
 async function updateItem(
@@ -124,12 +125,12 @@ async function updateItem(
       },
       body: JSON.stringify({ content, checked }),
     },
-  );
+  )
 
   if (!res.ok) {
-    throw new Error(`Failed to update item: ${res.status}`);
+    throw new Error(`Failed to update item: ${res.status}`)
   }
-  return await res.json();
+  return await res.json()
 }
 
 async function toggleAllItems(checklistID: string, checked: boolean) {
@@ -142,13 +143,13 @@ async function toggleAllItems(checklistID: string, checked: boolean) {
         userID: "1",
       },
     },
-  );
+  )
 
   if (!res.ok) {
-    throw new Error(`Failed to toggle all items: ${res.status}`);
+    throw new Error(`Failed to toggle all items: ${res.status}`)
   }
 
-  return await res.json();
+  return await res.json()
 }
 
 async function deleteItem(checklistID: string, itemID: string) {
@@ -161,13 +162,13 @@ async function deleteItem(checklistID: string, itemID: string) {
         userID: "1",
       },
     },
-  );
+  )
 
   if (!res.ok) {
-    throw new Error(`Failed to delete item: ${res.status}`);
+    throw new Error(`Failed to delete item: ${res.status}`)
   }
 
-  return await res.json();
+  return await res.json()
 }
 
 export {
@@ -180,4 +181,4 @@ export {
   updateItem,
   toggleAllItems,
   deleteItem,
-};
+}
