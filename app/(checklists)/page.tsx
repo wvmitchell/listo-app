@@ -1,6 +1,7 @@
 import { getChecklists, deleteChecklist } from "@/api/checklistAPI"
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"
+import NewChecklistButton from "@/app/components/NewChecklistButton"
 
 type ChecklistParams = {
   id: string
@@ -28,11 +29,7 @@ const ChecklistPage = async ({ params }: { params: ChecklistParams }) => {
           </div>
         ))}
       </div>
-      <div className="fixed bottom-5 right-5">
-        <button>
-          <PencilSquareIcon className="h-5 w-5 text-slate-500 active:text-slate-700" />
-        </button>
-      </div>
+      <NewChecklistButton />
     </div>
   )
 }
