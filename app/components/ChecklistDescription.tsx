@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"
@@ -21,7 +20,6 @@ const ChecklistDescription = ({
   created_at,
   updated_at,
 }: ChecklistDescriptionProps) => {
-  const [showMenu, setShowMenu] = useState(false)
   const queryClient = useQueryClient()
   const deleteChecklistMutation = useMutation({
     mutationFn: (variables: { id: string }) => {
@@ -46,20 +44,8 @@ const ChecklistDescription = ({
     createdBy: "Dries Vincent",
   }
 
-  const statuses = {
-    Active: "bg-green-100 text-green-800",
-    Completed: "bg-gray-100 text-gray-800",
-    "On hold": "bg-yellow-100 text-yellow-800",
-  }
-
   function parseDate(date: string) {
     const dateObj = new Date(Date.parse(date))
-    const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }
     return dateObj.toLocaleDateString("en-US")
   }
 

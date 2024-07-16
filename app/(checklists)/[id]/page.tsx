@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect, useRef } from "react"
 import { debounce } from "lodash"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import Item from "./components/Item"
-import ChecklistControls from "./components/ChecklistControls"
 import ChecklistMenu from "./components/ChecklistMenu"
 import { PlusCircleIcon } from "@heroicons/react/24/outline"
 import {
@@ -193,8 +192,6 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   function handleDragEnter(e: React.DragEvent<HTMLDivElement>, index: number) {
     e.preventDefault()
     if (draggingIndex === -1) return
-    let target = e.target as HTMLDivElement
-
     const itemsCopy = [...items]
     const [draggedItem] = itemsCopy.splice(draggingIndex, 1)
     itemsCopy.splice(index, 0, draggedItem)
@@ -206,7 +203,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     e.preventDefault()
   }
 
-  function handleDragEnd(e: React.DragEvent<HTMLDivElement>, index: number) {
+  function handleDragEnd(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault()
     let target = e.target as HTMLDivElement
     target.classList.remove("opacity-0")
@@ -256,7 +253,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           key={item.id}
           onDragStart={(event) => handleDragStart(event, index)}
           onDragEnter={(event) => handleDragEnter(event, index)}
-          onDragEnd={(event) => handleDragEnd(event, index)}
+          onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
           className={`${locked ? "" : "cursor-move"}`}
         >

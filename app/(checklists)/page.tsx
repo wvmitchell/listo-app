@@ -1,21 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getChecklists, deleteChecklist } from "@/api/checklistAPI"
-import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
-import { useQuery, useMutation } from "@tanstack/react-query"
-import Link from "next/link"
+import { getChecklists } from "@/api/checklistAPI"
+import { useQuery } from "@tanstack/react-query"
 import NewChecklistButton from "@/app/components/NewChecklistButton"
 import ChecklistDescription from "@/app/components/ChecklistDescription"
 
-type ChecklistParams = {
-  id: string
-}
-
-const ChecklistPage = ({ params }: { params: ChecklistParams }) => {
+const ChecklistsPage = () => {
   const [checklists, setChecklists] = useState([])
-  const [loading, setLoading] = useState(true)
-  const { data, isPending, isError, error, isSuccess } = useQuery({
+  const { data, isPending, error, isSuccess } = useQuery({
     queryKey: ["checklists"],
     queryFn: () => getChecklists(),
     staleTime: 0,
@@ -24,11 +17,10 @@ const ChecklistPage = ({ params }: { params: ChecklistParams }) => {
   useEffect(() => {
     if (isSuccess && data) {
       setChecklists(data.checklists)
-      setLoading(false)
     }
   }, [data, isSuccess])
 
-  if (loading) return <div>Loading...</div>
+  if (isPending) return <div>Loading...</div>
   if (error) return <div>Error: {error.message}</div>
 
   return (
@@ -49,4 +41,4 @@ const ChecklistPage = ({ params }: { params: ChecklistParams }) => {
   )
 }
 
-export default ChecklistPage
+export default ChecklistsPage
