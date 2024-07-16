@@ -44,7 +44,7 @@ async function createChecklist() {
       // TODO: replace with actual user ID
       userID: "1",
     },
-    body: JSON.stringify({ title: "New Checklist" }),
+    body: JSON.stringify({ title: "New Listo (click to edit)" }),
   })
 
   if (!res.ok) {
