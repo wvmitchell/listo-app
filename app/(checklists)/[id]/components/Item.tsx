@@ -1,8 +1,10 @@
 "use client"
 
+import { useState, useEffect, useCallback } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { TrashIcon } from "@heroicons/react/24/solid"
-import { updateItem, deleteItem } from "@/api/checklistAPI"
+import { debounce } from "lodash"
+import { deleteItem } from "@/api/checklistAPI"
 
 type ChecklistItem = {
   id: string
@@ -17,30 +19,13 @@ type ItemProps = {
   checklistID: string
   item: ChecklistItem
   locked: boolean
+  updateItemMutation: any
 }
 
-function Item({ checklistID, item, locked }: ItemProps) {
+function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
+  const [updating, setUpdating] = useState(false)
+  const [content, setContent] = useState(item.content)
   const queryClient = useQueryClient()
-  const updateItemMutation = useMutation({
-    mutationFn: (variables: {
-      checklistID: string
-      itemID: string
-      checked: boolean
-      content: string
-      ordering: number
-    }) => {
-      return updateItem(
-        variables.checklistID,
-        variables.itemID,
-        variables.checked,
-        variables.content,
-        variables.ordering,
-      )
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["checklist"] })
-    },
-  })
 
   const deleteItemMutation = useMutation({
     mutationFn: (variables: { checklistID: string; itemID: string }) => {
@@ -51,28 +36,56 @@ function Item({ checklistID, item, locked }: ItemProps) {
     },
   })
 
+  useEffect(() => {
+    if (updating) {
+      const input = document.getElementById(`item-input-${item.id}`)
+      input?.focus()
+    }
+  }, [updating, item.id])
+
+  const updateItemCallback = useCallback(
+    debounce((content: string) => {
+      updateItemMutation.mutate({
+        checklistID,
+        itemID: item.id,
+        checked: item.checked,
+        content,
+        ordering: item.ordering,
+      }),
+        500
+    }),
+    [updateItemMutation],
+  )
+
   function toggleItem(e: React.ChangeEvent<HTMLInputElement>) {
-    const itemID = e.target.id
     const checked = e.target.checked
-    const content = e.target.nextSibling?.textContent || ""
     updateItemMutation.mutate({
       checklistID,
-      itemID,
+      itemID: item.id,
       checked,
-      content,
+      content: item.content,
       ordering: item.ordering,
     })
   }
 
-  function handleDeleteItem(e: React.MouseEvent<HTMLButtonElement>) {
-    const itemID = e.currentTarget.id
-    deleteItemMutation.mutate({ checklistID, itemID })
+  function handleDeleteItem() {
+    deleteItemMutation.mutate({ checklistID, itemID: item.id })
+  }
+
+  function handleContentChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setContent(e.target.value)
+    updateItemCallback(e.target.value)
+  }
+
+  function handleClickItem() {
+    if (locked) return
+    setUpdating(true)
   }
 
   return (
     <div
       key={item.id}
-      className="mt-1 grid grid-cols-[auto_1fr_auto] items-start rounded-sm bg-white p-3 shadow-sm"
+      className="mt-1 flex flex-row rounded-sm bg-white p-3 shadow-sm"
       draggable={!locked}
     >
       <input
@@ -80,11 +93,32 @@ function Item({ checklistID, item, locked }: ItemProps) {
         id={item.id}
         onChange={toggleItem}
         checked={item.checked}
-        className="mt-1 size-4 accent-slate-700"
+        className="blur:ring-0 mt-1 h-4 w-4 rounded border-gray-300 text-slate-600 focus:ring-slate-600"
       />
-      <p className="ml-4 text-sm">{item.content}</p>
+      {updating ? (
+        <form
+          onSubmit={() => setUpdating(false)}
+          className="m-0 w-full text-sm leading-5"
+        >
+          <input
+            id={`item-input-${item.id}`}
+            type="text"
+            value={content}
+            className="ml-4 w-full border-0 p-0 text-sm outline-none focus:ring-0 active:ring-0"
+            onChange={handleContentChange}
+            onBlur={() => setUpdating(false)}
+          />
+        </form>
+      ) : (
+        <p
+          className={`ml-4 ${locked ? "cursor-default" : "cursor-pointer"} text-sm`}
+          onClick={handleClickItem}
+        >
+          {content}
+        </p>
+      )}
       {locked ? null : (
-        <button id={item.id} onClick={handleDeleteItem}>
+        <button id={item.id} onClick={handleDeleteItem} className="ml-auto">
           <TrashIcon className="ml-4 size-4" />
         </button>
       )}

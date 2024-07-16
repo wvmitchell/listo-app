@@ -82,9 +82,9 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     mutationFn: (variables: {
       checklistID: string
       itemID: string
-      ordering: number
       checked: boolean
       content: string
+      ordering: number
     }) => {
       return updateItem(
         variables.checklistID,
@@ -93,6 +93,9 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
         variables.content,
         variables.ordering,
       )
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["checklist"] })
     },
   })
 
@@ -179,7 +182,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     clone.style.top = "-9999px"
     clone.style.width = `${rect.width}px`
     clone.style.height = `${rect.height}px`
-    clone.classList.add("font-mono", "drag-clone")
+    clone.classList.add("drag-clone")
     document.body.appendChild(clone)
     e.dataTransfer.setDragImage(
       clone,
@@ -239,7 +242,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           name="checklist-name"
           value={title}
           onChange={handleUpdateChecklistTitle}
-          className="w-full bg-transparent text-xl font-bold focus:outline-none"
+          className="m-0 w-full border-0 bg-transparent p-0 text-xl font-bold outline-none ring-0 focus:outline-none focus:ring-0 active:ring-0"
           disabled={locked}
         />
         <ChecklistMenu
@@ -257,7 +260,12 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           onDragOver={handleDragOver}
           className={`${locked ? "" : "cursor-move"}`}
         >
-          <Item checklistID={checklistID} item={item} locked={locked} />
+          <Item
+            updateItemMutation={updateItemMutation}
+            checklistID={checklistID}
+            item={item}
+            locked={locked}
+          />
         </div>
       ))}
       {locked ? null : (
@@ -281,7 +289,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
               type="text"
               name="new-item"
               hidden={!showForm || !formOpen}
-              className="rounded-sm px-1 text-sm outline-none"
+              className="rounded-sm border-0 p-0 px-1 text-sm outline-none ring-0 focus:ring-0 active:ring-0"
             />
             <button
               type="submit"
