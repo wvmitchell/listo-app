@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { getChecklists } from "@/api/checklistAPI"
 import { useQuery } from "@tanstack/react-query"
-import NewChecklistButton from "@/app/components/NewChecklistButton"
+import ChecklistsOptionsMenu from "@/app/components/ChecklistsOptionsMenu"
 import ChecklistDescription from "@/app/components/ChecklistDescription"
 
 const ChecklistsPage = () => {
@@ -25,7 +25,9 @@ const ChecklistsPage = () => {
 
   return (
     <div>
-      <NewChecklistButton />
+      <div className="flex flex-row justify-end">
+        <ChecklistsOptionsMenu />
+      </div>
       <ul role="list">
         {checklists.map((checklist: { [key: string]: any }) => (
           <ChecklistDescription
