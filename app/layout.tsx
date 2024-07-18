@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Header from "@/app/components/Header"
+import { UserProvider } from "@auth0/nextjs-auth0/client"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -15,10 +15,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
-          <Header />
-          {children}
-        </div>
+        <UserProvider>
+          <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+            {children}
+          </div>
+        </UserProvider>
       </body>
     </html>
   )
