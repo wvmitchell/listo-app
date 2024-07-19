@@ -1,7 +1,11 @@
 "use client"
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
-import { ChevronDownIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
+import {
+  ChevronDownIcon,
+  PencilSquareIcon,
+  ArrowRightStartOnRectangleIcon,
+} from "@heroicons/react/24/solid"
 import { useRouter } from "next/navigation"
 import { createChecklist } from "@/api/checklistAPI"
 
@@ -39,6 +43,18 @@ const ChecklistsOptionsMenu = () => {
             />
             New Listo
           </span>
+        </MenuItem>
+        <MenuItem>
+          <a
+            href="/api/auth/logout"
+            className="group flex items-center px-4 py-2 text-sm text-slate-700 data-[focus]:bg-slate-100 data-[focus]:text-slate-900"
+          >
+            <ArrowRightStartOnRectangleIcon
+              aria-hidden="true"
+              className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500"
+            />
+            Logout
+          </a>
         </MenuItem>
       </MenuItems>
     </Menu>
