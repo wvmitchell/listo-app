@@ -36,13 +36,6 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
     },
   })
 
-  useEffect(() => {
-    if (updating) {
-      const input = document.getElementById(`item-input-${item.id}`)
-      input?.focus()
-    }
-  }, [updating, item.id])
-
   const updateItemCallback = useCallback(
     debounce((content: string) => {
       updateItemMutation.mutate({
@@ -56,6 +49,14 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
     }),
     [updateItemMutation],
   )
+
+  useEffect(() => {
+    if (updating) {
+      const input = document.getElementById(`item-input-${item.id}`)
+      input?.focus()
+    }
+  }, [updating, item.id])
+
 
   function toggleItem(e: React.ChangeEvent<HTMLInputElement>) {
     const checked = e.target.checked

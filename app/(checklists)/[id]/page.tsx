@@ -158,6 +158,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   function handleLockChecklist() {
     setShowForm(false)
     setFormOpen(false)
+    setLocked(!locked)
     updateChecklistMutation.mutate({ checklistID, title, locked: !locked })
   }
 
