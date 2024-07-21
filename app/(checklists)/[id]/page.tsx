@@ -1,18 +1,18 @@
 "use client"
 
-import { useState, useCallback, useEffect, useRef } from "react"
-import { debounce } from "lodash"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import Item from "./components/Item"
-import ChecklistMenu from "./components/ChecklistMenu"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { PlusCircleIcon } from "@heroicons/react/24/outline"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { debounce } from "lodash"
 import {
-  updateChecklist,
-  getChecklist,
-  updateItem,
   createItem,
+  getChecklist,
   toggleAllItems,
+  updateChecklist,
+  updateItem,
 } from "@/api/checklistAPI"
+import ChecklistMenu from "./components/ChecklistMenu"
+import Item from "./components/Item"
 
 type ChecklistItem = {
   id: string
