@@ -4,7 +4,7 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Listo",
-  description: "Checklist app built with Next.js",
+  description: "Listo lets you get things done with your friends and family. Simple, fast, and fun.",
 }
 
 export default function RootLayout({
