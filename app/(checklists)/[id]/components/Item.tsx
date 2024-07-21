@@ -51,6 +51,10 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
     }
   }, [updating, item.id])
 
+  useEffect(() => {
+    setIsChecked(item.checked)
+  }, [item.checked])
+
   function toggleItem(e: React.ChangeEvent<HTMLInputElement>) {
     const checked = e.target.checked
     setIsChecked(checked)
