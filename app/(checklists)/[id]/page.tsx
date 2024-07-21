@@ -1,7 +1,6 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { PlusCircleIcon } from "@heroicons/react/24/outline"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { debounce } from "lodash"
 import {
@@ -14,6 +13,7 @@ import {
 } from "@/api/checklistAPI"
 import ChecklistMenu from "./components/ChecklistMenu"
 import Item from "./components/Item"
+import NewItemForm from "./components/NewItemForm"
 
 type ChecklistItem = {
   id: string
@@ -33,10 +33,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   const [title, setTitle] = useState("")
   const [items, setItems] = useState<ChecklistItem[]>([])
   const [locked, setLocked] = useState(true)
-  const [formOpen, setFormOpen] = useState(false)
-  const [showForm, setShowForm] = useState(false)
   const [draggingIndex, setDraggingIndex] = useState(-1)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const queryClient = useQueryClient()
   const { isPending, isError, data, error, isSuccess } = useQuery({
@@ -122,23 +119,6 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     },
   })
 
-  useEffect(() => {
-    if (isSuccess && data) {
-      setTitle(data.checklist.title)
-      setLocked(data.checklist.locked)
-      let sorted = data.items.sort(
-        (a: ChecklistItem, b: ChecklistItem) => a.ordering - b.ordering,
-      )
-      setItems(sorted)
-    }
-  }, [isSuccess, data])
-
-  useEffect(() => {
-    if (showForm) {
-      inputRef.current?.focus()
-    }
-  }, [showForm])
-
   const debouncedUpdateChecklistTitle = useCallback(
     debounce(
       (newTitle: string, locked: boolean) =>
@@ -151,6 +131,17 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     ),
     [checklistID],
   )
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      setTitle(data.checklist.title)
+      setLocked(data.checklist.locked)
+      let sorted = data.items.sort(
+        (a: ChecklistItem, b: ChecklistItem) => a.ordering - b.ordering,
+      )
+      setItems(sorted)
+    }
+  }, [isSuccess, data])
 
   function handleUpdateChecklistTitle(e: React.ChangeEvent<HTMLInputElement>) {
     setTitle(e.target.value)
@@ -171,8 +162,6 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   }
 
   function handleLockChecklist() {
-    setShowForm(false)
-    setFormOpen(false)
     setLocked(!locked)
     updateChecklistMutation.mutate({ checklistID, title, locked: !locked })
   }
@@ -184,14 +173,6 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   function handleDeleteCompleted() {
     let itemIDs = items.filter((item) => item.checked).map((item) => item.id)
     deleteCompletedItemsMutation.mutate({ checklistID, itemIDs })
-  }
-
-  function handleFormToggle() {
-    setFormOpen(!formOpen)
-  }
-
-  function handleTranistionEnd() {
-    setShowForm(formOpen)
   }
 
   function handleDragStart(e: React.DragEvent<HTMLDivElement>, index: number) {
@@ -233,6 +214,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     target.classList.remove("opacity-0")
     document.body.querySelector(".drag-clone")?.remove()
     setDraggingIndex(-1)
+    updateItemOrder()
   }
 
   function updateItemOrder() {
@@ -289,39 +271,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           />
         </div>
       ))}
-      {locked ? null : (
-        <div
-          className={`mt-1 grid grid-cols-[auto_1fr] items-center rounded-sm bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-10"}`}
-          onTransitionEnd={handleTranistionEnd}
-        >
-          <button
-            className="py-[0.65rem] pl-2 pr-[7px]"
-            onClick={handleFormToggle}
-          >
-            <PlusCircleIcon className="size-[24px] text-slate-700" />
-          </button>
-          <form
-            onSubmit={handleNewItem}
-            hidden={!showForm || !formOpen}
-            className="grid w-full grid-cols-[1fr_auto] gap-2 py-2 pr-3"
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              name="new-item"
-              hidden={!showForm || !formOpen}
-              className="rounded-sm border-0 p-0 px-1 text-sm outline-none ring-0 focus:ring-0 active:ring-0"
-            />
-            <button
-              type="submit"
-              hidden={!showForm || !formOpen}
-              className="rounded-sm border border-slate-300 px-2 text-sm"
-            >
-              Add
-            </button>
-          </form>
-        </div>
-      )}
+      {locked ? null : <NewItemForm handleNewItem={handleNewItem} />}
     </div>
   )
 }
