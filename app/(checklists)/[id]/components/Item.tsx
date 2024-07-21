@@ -23,8 +23,9 @@ type ItemProps = {
 }
 
 function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
-  const [updating, setUpdating] = useState(false)
+  const [isChecked, setIsChecked] = useState(item.checked)
   const [content, setContent] = useState(item.content)
+  const [updating, setUpdating] = useState(false)
   const queryClient = useQueryClient()
 
   const updateItemCallback = useCallback(
@@ -41,6 +42,8 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
     [updateItemMutation],
   )
 
+  // This effect will focus the input field when the item is set to updating.
+  // This ensures the caret appears in the input field when the user clicks on the item.
   useEffect(() => {
     if (updating) {
       const input = document.getElementById(`item-input-${item.id}`)
@@ -50,6 +53,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
 
   function toggleItem(e: React.ChangeEvent<HTMLInputElement>) {
     const checked = e.target.checked
+    setIsChecked(checked)
     updateItemMutation.mutate({
       checklistID,
       itemID: item.id,
@@ -79,7 +83,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
         type="checkbox"
         id={item.id}
         onChange={toggleItem}
-        checked={item.checked}
+        checked={isChecked}
         className="blur:ring-0 mt-1 h-4 w-4 rounded border-gray-300 text-slate-600 focus:ring-slate-600"
       />
       {updating ? (
