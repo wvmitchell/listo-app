@@ -16,12 +16,14 @@ type ChecklistMenuProps = {
   locked: boolean
   handleLockChecklist: (locked: boolean) => void
   handleToggleAll: (toggle: boolean) => void
+  handleDeleteCompleted: () => void
 }
 
 function ChecklistMenu({
   locked,
   handleLockChecklist,
   handleToggleAll,
+  handleDeleteCompleted,
 }: ChecklistMenuProps) {
   const menuItems: { [key: string]: { icon: any; action: () => void } } = {
     "Check All": {
@@ -47,6 +49,11 @@ function ChecklistMenu({
     menuItems["Lock"] = {
       icon: LockClosedIcon,
       action: () => handleLockChecklist(true),
+    }
+
+    menuItems["Delete Completed"] = {
+      icon: TrashIcon,
+      action: () => handleDeleteCompleted(),
     }
   }
 

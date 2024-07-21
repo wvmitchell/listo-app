@@ -10,6 +10,7 @@ import {
   toggleAllItems,
   updateChecklist,
   updateItem,
+  deleteItem,
 } from "@/api/checklistAPI"
 import ChecklistMenu from "./components/ChecklistMenu"
 import Item from "./components/Item"
@@ -108,6 +109,19 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     },
   })
 
+  const deleteCompletedItemsMutation = useMutation({
+    mutationFn: (variables: { checklistID: string; itemIDs: string[] }) => {
+      return Promise.all(
+        variables.itemIDs.map((id) => {
+          return deleteItem(variables.checklistID, id)
+        }),
+      )
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["checklist"] })
+    },
+  })
+
   useEffect(() => {
     if (isSuccess && data) {
       setTitle(data.checklist.title)
@@ -147,10 +161,11 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     e.preventDefault()
     let form = e.target as HTMLFormElement
     let formData = new FormData(form)
+    let ordering = items.length ? items[items.length - 1].ordering + 1 : 0
     newItemMutation.mutate({
       checklistID,
       content: formData.get("new-item") as string,
-      ordering: items.length,
+      ordering,
     })
     form.reset()
   }
@@ -164,6 +179,11 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
 
   function handleToggleAll(toggle: boolean) {
     toggleAllMutation.mutate({ checklistID, checked: toggle })
+  }
+
+  function handleDeleteCompleted() {
+    let itemIDs = items.filter((item) => item.checked).map((item) => item.id)
+    deleteCompletedItemsMutation.mutate({ checklistID, itemIDs })
   }
 
   function handleFormToggle() {
@@ -213,7 +233,6 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     target.classList.remove("opacity-0")
     document.body.querySelector(".drag-clone")?.remove()
     setDraggingIndex(-1)
-    updateItemOrder()
   }
 
   function updateItemOrder() {
@@ -250,6 +269,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           locked={locked}
           handleLockChecklist={handleLockChecklist}
           handleToggleAll={handleToggleAll}
+          handleDeleteCompleted={handleDeleteCompleted}
         />
       </div>
       {items.map((item: ChecklistItem, index: number) => (

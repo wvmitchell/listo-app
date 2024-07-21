@@ -27,15 +27,6 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
   const [content, setContent] = useState(item.content)
   const queryClient = useQueryClient()
 
-  const deleteItemMutation = useMutation({
-    mutationFn: (variables: { checklistID: string; itemID: string }) => {
-      return deleteItem(variables.checklistID, variables.itemID)
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["checklist"] })
-    },
-  })
-
   const updateItemCallback = useCallback(
     debounce((content: string) => {
       updateItemMutation.mutate({
@@ -57,7 +48,6 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
     }
   }, [updating, item.id])
 
-
   function toggleItem(e: React.ChangeEvent<HTMLInputElement>) {
     const checked = e.target.checked
     updateItemMutation.mutate({
@@ -67,10 +57,6 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
       content: item.content,
       ordering: item.ordering,
     })
-  }
-
-  function handleDeleteItem() {
-    deleteItemMutation.mutate({ checklistID, itemID: item.id })
   }
 
   function handleContentChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -117,11 +103,6 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
         >
           {content}
         </p>
-      )}
-      {locked ? null : (
-        <button id={item.id} onClick={handleDeleteItem} className="ml-auto">
-          <TrashIcon className="ml-4 size-4" />
-        </button>
       )}
     </div>
   )
