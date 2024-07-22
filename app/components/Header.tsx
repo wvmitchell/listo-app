@@ -1,10 +1,12 @@
 import Link from "next/link"
+import Image from "next/image"
+import fullLogo from "@/app/images/full_logo.png"
 
 function Header() {
   return (
-    <div className="mb-4">
+    <div className="my-4">
       <Link href="/">
-        <h1 className="text-2xl font-bold">Listo</h1>
+        <Image src={fullLogo} width={50} height={50} alt="Listo" />
       </Link>
     </div>
   )
