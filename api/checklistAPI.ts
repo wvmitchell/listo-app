@@ -1,7 +1,7 @@
 "use server"
 
 // base url is the environment variable BASE_URL or http://localhost:3000
-const BASE_URL = process.env.BASE_URL || "http://localhost:8080"
+const BASE_URL = process.env.BASE_URL || "http://localhost:80"
 import { getSession } from "@auth0/nextjs-auth0"
 
 async function getUserID(): Promise<string> {
