@@ -5,7 +5,6 @@ import {
   ChevronDownIcon,
   CheckCircleIcon,
   MinusCircleIcon,
-  DocumentDuplicateIcon,
   LockClosedIcon,
   LockOpenIcon,
   TrashIcon,

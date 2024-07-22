@@ -1,10 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { TrashIcon } from "@heroicons/react/24/solid"
 import { debounce } from "lodash"
-import { deleteItem } from "@/api/checklistAPI"
 
 type ChecklistItem = {
   id: string
@@ -26,7 +23,6 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
   const [isChecked, setIsChecked] = useState(item.checked)
   const [content, setContent] = useState(item.content)
   const [updating, setUpdating] = useState(false)
-  const queryClient = useQueryClient()
 
   const updateItemCallback = useCallback(
     debounce((content: string) => {
