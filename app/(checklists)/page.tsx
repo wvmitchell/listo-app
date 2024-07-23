@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getChecklists } from "@/api/checklistAPI"
+import { getChecklists } from "@/utils/checklistAPI"
 import { useQuery } from "@tanstack/react-query"
 import ChecklistsOptionsMenu from "@/app/components/ChecklistsOptionsMenu"
 import ChecklistDescription from "@/app/components/ChecklistDescription"

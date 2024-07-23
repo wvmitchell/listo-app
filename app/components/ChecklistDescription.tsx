@@ -4,7 +4,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
-import { deleteChecklist } from "@/api/checklistAPI"
+import { deleteChecklist } from "@/utils/checklistAPI"
 
 type ChecklistDescriptionProps = {
   key: any

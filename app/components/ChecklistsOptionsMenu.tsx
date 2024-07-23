@@ -7,7 +7,7 @@ import {
   ArrowRightStartOnRectangleIcon,
 } from "@heroicons/react/24/solid"
 import { useRouter } from "next/navigation"
-import { createChecklist } from "@/api/checklistAPI"
+import { createChecklist } from "@/utils/checklistAPI"
 
 const ChecklistsOptionsMenu = () => {
   const router = useRouter()

@@ -10,7 +10,7 @@ import {
   updateChecklist,
   updateItem,
   deleteItem,
-} from "@/api/checklistAPI"
+} from "@/utils/checklistAPI"
 import ChecklistMenu from "./components/ChecklistMenu"
 import Item from "./components/Item"
 import NewItemForm from "./components/NewItemForm"
