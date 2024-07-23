@@ -1,18 +1,6 @@
 "use server"
 
-// base url is the environment variable BASE_URL or http://localhost:3000
-const BASE_URL = process.env.BASE_URL || "http://localhost:80"
-import { getSession } from "@auth0/nextjs-auth0"
-
-async function getUserID(): Promise<string> {
-  const session = await getSession()
-  return session?.user.sub
-}
-
-async function getAuth0Token(): Promise<string | undefined> {
-  const session = await getSession()
-  return session?.accessToken
-}
+import { BASE_URL, getUserID, getAuth0Token } from "./utils"
 
 async function getChecklists() {
   const token = await getAuth0Token()
