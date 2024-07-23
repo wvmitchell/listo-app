@@ -32,10 +32,9 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
         checked: item.checked,
         content,
         ordering: item.ordering,
-      }),
-        500
-    }),
-    [updateItemMutation],
+      })
+    }, 500),
+    [],
   )
 
   // This effect will focus the input field when the item is set to updating.

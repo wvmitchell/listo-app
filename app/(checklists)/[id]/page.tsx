@@ -119,17 +119,16 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     },
   })
 
-  const debouncedUpdateChecklistTitle = useCallback(
-    debounce(
-      (newTitle: string, locked: boolean) =>
-        updateChecklistMutation.mutate({
-          checklistID,
-          title: newTitle,
-          locked: locked,
-        }),
-      500,
-    ),
-    [checklistID],
+  const updateTitleCallback = useCallback(
+    debounce((title: string, locked: boolean) => {
+      console.log("running")
+      updateChecklistMutation.mutate({
+        checklistID,
+        title,
+        locked,
+      })
+    }, 1000),
+    [],
   )
 
   useEffect(() => {
@@ -145,7 +144,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
 
   function handleUpdateChecklistTitle(e: React.ChangeEvent<HTMLInputElement>) {
     setTitle(e.target.value)
-    debouncedUpdateChecklistTitle(e.target.value, locked)
+    updateTitleCallback(e.target.value, locked)
   }
 
   function handleNewItem(e: React.FormEvent<HTMLFormElement>) {
