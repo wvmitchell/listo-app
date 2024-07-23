@@ -4,7 +4,8 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Listo",
-  description: "Listo lets you get things done with your friends and family. Simple, fast, and fun.",
+  description:
+    "Listo lets you get things done with your friends and family. Simple, fast, and fun.",
 }
 
 export default function RootLayout({
@@ -14,13 +15,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <UserProvider>
+      <UserProvider>
+        <body>
           <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
             {children}
           </div>
-        </UserProvider>
-      </body>
+        </body>
+      </UserProvider>
     </html>
   )
 }
