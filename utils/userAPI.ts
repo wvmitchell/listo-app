@@ -7,10 +7,10 @@ export async function userExists() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-      "userID": userId
-    }
+      userID: userId,
+    },
   })
   return response.ok
 }
@@ -22,10 +22,10 @@ export async function createUserProfile() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-      "userID": userId
-    }
+      userID: userId,
+    },
   })
   return response.ok
 }
