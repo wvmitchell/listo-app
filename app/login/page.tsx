@@ -2,6 +2,7 @@ import { getSession } from "@auth0/nextjs-auth0"
 import { redirect } from "next/navigation"
 import Image from "next/image"
 import logoWithTagline from "@/app/images/full_logo_with_tagline.png"
+import Auth0Link from "./auth0Link"
 
 const LoginPage = async () => {
   const session = await getSession()
@@ -20,12 +21,7 @@ const LoginPage = async () => {
           height={200}
           alt="Listo. Get it done together."
         />
-        <a
-          href="/api/auth/login"
-          className="mt-5 rounded-md border border-slate-500 bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
-        >
-          Get Started!
-        </a>
+        <Auth0Link />
       </div>
     )
   )
