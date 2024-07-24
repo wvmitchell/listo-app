@@ -52,9 +52,9 @@ const ChecklistDescription = ({
   return (
     <li
       key={id}
-      className="mt-1 flex items-center justify-between gap-x-6 rounded-sm bg-white p-3 hover:bg-slate-50"
+      className="mt-1 flex items-center justify-between rounded-sm bg-white p-3 hover:bg-slate-50"
     >
-      <Link className="min-w-0" href={`/${id}`}>
+      <Link className="w-full" href={`/${id}`}>
         <div className="flex items-start gap-x-3">
           <p className="text-sm font-semibold leading-6 text-gray-900">
             {title}
