@@ -112,6 +112,7 @@ const ItemList = ({
 
     // collect the item being touched and set it in state
     setTouchedItem(item)
+    setTimeout(() => document.body.classList.add(styles.disableMovement), 0)
 
     // get the dimensions and position of the element
     const rect = target.getBoundingClientRect()
