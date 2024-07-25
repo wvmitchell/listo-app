@@ -135,7 +135,7 @@ const ItemList = ({
 
   function handleTouchMove(e: React.TouchEvent<HTMLDivElement>) {
     if (!touchedItem) return
-    document.body.classList.add(styles.disableMovement)
+    if (!document.body.classList.contains(styles.disableMovement)) return
 
     // collect touch and element being dragged
     const touch = e.touches[0]
