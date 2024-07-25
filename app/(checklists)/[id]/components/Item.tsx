@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { debounce } from "lodash"
+import { Bars2Icon } from "@heroicons/react/24/solid"
 import type { ChecklistItem } from "@/utils/types"
 
 type ItemProps = {
@@ -92,12 +93,19 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
         </form>
       ) : (
         <p
-          className={`ml-4 ${locked ? "cursor-default" : "cursor-pointer"} text-sm`}
+          className={`mx-4 ${locked ? "cursor-default" : "cursor-pointer"} text-sm`}
           onClick={handleClickItem}
         >
           {content}
         </p>
       )}
+      <div className="ml-auto w-5 content-center" data-move-icon>
+        <Bars2Icon
+          className="h-5 w-5 cursor-move text-slate-500"
+          aria-hidden="true"
+          data-move-icon
+        />
+      </div>
     </div>
   )
 }

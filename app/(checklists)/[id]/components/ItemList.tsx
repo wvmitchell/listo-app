@@ -98,12 +98,16 @@ const ItemList = ({
     e: React.TouchEvent<HTMLDivElement>,
     item: ChecklistItem,
   ) {
-    // collect the item being touched and set it in state
-    setTouchedItem(item)
+    // return unless the touch even happened on the move-icon
+    const eventTarget = e.target as HTMLDivElement
+    if (!eventTarget.dataset.moveIcon) return
 
     // collect the touch and the element
     const touch = e.touches[0]
     const target = e.currentTarget as HTMLDivElement
+
+    // collect the item being touched and set it in state
+    setTouchedItem(item)
 
     // get the dimensions and position of the element
     const rect = target.getBoundingClientRect()
@@ -139,7 +143,7 @@ const ItemList = ({
     const clone = document.body.querySelector(".drag-clone") as HTMLDivElement
     clone.style.position = "absolute"
     clone.style.left = `${touch.clientX - touchOffset.current.x}px`
-    clone.style.top = `${touch.clientY - touchOffset.current.y}px`
+    clone.style.top = `${touch.clientY - touchOffset.current.y + window.scrollY}px`
 
     // collect all the item dom elements and convert them to an array
     const container = document.getElementById("item-container")
