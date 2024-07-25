@@ -38,6 +38,7 @@ const ItemList = ({
   }, [touchedItem])
 
   function handleDragStart(e: React.DragEvent<HTMLDivElement>, index: number) {
+    if (locked) return
     setDraggingIndex(index)
     let target = e.target as HTMLDivElement
     let rect = target.getBoundingClientRect()
@@ -98,6 +99,9 @@ const ItemList = ({
     e: React.TouchEvent<HTMLDivElement>,
     item: ChecklistItem,
   ) {
+    // can't reorder items if the list is locked
+    if (locked) return
+
     // return unless the touch even happened on the move-icon
     const eventTarget = e.target as HTMLDivElement
     if (!eventTarget.dataset.moveIcon) return

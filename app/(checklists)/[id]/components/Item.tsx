@@ -116,7 +116,10 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
           {content}
         </p>
       )}
-      <div className="ml-auto w-5 content-center" data-move-icon>
+      <div
+        className={`ml-auto w-5 content-center ${locked ? "hidden" : ""}`}
+        data-move-icon
+      >
         <Bars2Icon
           className="h-5 w-5 cursor-move text-slate-500"
           aria-hidden="true"
