@@ -43,7 +43,7 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
       className={`mb-4 mt-1 grid grid-cols-[auto_1fr] items-center rounded-sm bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-10"}`}
       onTransitionEnd={handleTranistionEnd}
     >
-      <button className="py-[0.65rem] pl-2 pr-[7px]" onClick={handleFormToggle}>
+      <button className="py-[0.65rem] pl-2 pr-[8px]" onClick={handleFormToggle}>
         <PlusCircleIcon className="size-[24px] text-slate-700" />
       </button>
       <form
@@ -58,7 +58,7 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
           role="textbox"
           hidden={!showForm || !formOpen}
           onInput={handleSpanInput}
-          className={`block w-full resize-none overflow-hidden rounded-sm border-0 p-0 px-1 text-sm leading-5 outline-none ring-0 focus:ring-0 active:ring-0`}
+          className="block w-full resize-none overflow-hidden rounded-sm border-0 p-0 px-1 text-sm leading-5 outline-none ring-0 focus:ring-0 active:ring-0"
           contentEditable
         ></span>
         <input name="new-item" type="text" value={content} hidden />
