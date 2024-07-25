@@ -98,12 +98,16 @@ const ItemList = ({
     e: React.TouchEvent<HTMLDivElement>,
     item: ChecklistItem,
   ) {
-    // collect the item being touched and set it in state
-    setTouchedItem(item)
+    // return unless the touch even happened on the move-icon
+    const eventTarget = e.target as HTMLDivElement
+    if (!eventTarget.dataset.moveIcon) return
 
     // collect the touch and the element
     const touch = e.touches[0]
     const target = e.currentTarget as HTMLDivElement
+
+    // collect the item being touched and set it in state
+    setTouchedItem(item)
 
     // get the dimensions and position of the element
     const rect = target.getBoundingClientRect()
