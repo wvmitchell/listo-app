@@ -61,7 +61,7 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
           className="block w-full resize-none overflow-hidden rounded-sm border-0 p-0 px-1 text-sm leading-5 outline-none ring-0 focus:ring-0 active:ring-0"
           contentEditable
         ></span>
-        <input name="new-item" type="text" value={content} hidden />
+        <input name="new-item" type="text" value={content} hidden readOnly />
         <button
           type="submit"
           hidden={!showForm || !formOpen}

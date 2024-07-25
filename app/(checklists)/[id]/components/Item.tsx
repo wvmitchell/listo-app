@@ -106,7 +106,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
             className="mx-4 block w-auto cursor-text resize-none border-0 p-0 text-sm leading-5 outline-none ring-0 focus:ring-0 active:ring-0"
             contentEditable
           ></span>
-          <input type="text" value={content} hidden />
+          <input type="text" value={content} hidden readOnly />
         </form>
       ) : (
         <p
