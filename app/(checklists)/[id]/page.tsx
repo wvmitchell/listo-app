@@ -11,18 +11,10 @@ import {
   updateItem,
   deleteItem,
 } from "@/utils/checklistAPI"
+import type { ChecklistItem } from "@/utils/types"
 import ChecklistMenu from "./components/ChecklistMenu"
-import Item from "./components/Item"
 import NewItemForm from "./components/NewItemForm"
-
-type ChecklistItem = {
-  id: string
-  content: string
-  checked: boolean
-  ordering: number
-  created_at: string
-  updated_at: string
-}
+import ItemList from "./components/ItemList"
 
 type ChecklistParams = {
   id: string
@@ -33,7 +25,6 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   const [title, setTitle] = useState("")
   const [items, setItems] = useState<ChecklistItem[]>([])
   const [locked, setLocked] = useState(true)
-  const [draggingIndex, setDraggingIndex] = useState(-1)
 
   const queryClient = useQueryClient()
   const { isPending, isError, data, error, isSuccess } = useQuery({
@@ -174,63 +165,6 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     deleteCompletedItemsMutation.mutate({ checklistID, itemIDs })
   }
 
-  function handleDragStart(e: React.DragEvent<HTMLDivElement>, index: number) {
-    setDraggingIndex(index)
-    let target = e.target as HTMLDivElement
-    let rect = target.getBoundingClientRect()
-    let clone = target.cloneNode(true) as HTMLDivElement
-    clone.style.position = "absolute"
-    clone.style.top = "-9999px"
-    clone.style.width = `${rect.width}px`
-    clone.style.height = `${rect.height}px`
-    clone.classList.add("drag-clone")
-    document.body.appendChild(clone)
-    e.dataTransfer.setDragImage(
-      clone,
-      e.clientX - rect.left,
-      e.clientY - rect.top,
-    )
-    target.classList.add("opacity-0")
-  }
-
-  function handleDragEnter(e: React.DragEvent<HTMLDivElement>, index: number) {
-    e.preventDefault()
-    if (draggingIndex === -1) return
-    const itemsCopy = [...items]
-    const [draggedItem] = itemsCopy.splice(draggingIndex, 1)
-    itemsCopy.splice(index, 0, draggedItem)
-    setDraggingIndex(index)
-    setItems(itemsCopy)
-  }
-
-  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault()
-  }
-
-  function handleDragEnd(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault()
-    let target = e.target as HTMLDivElement
-    target.classList.remove("opacity-0")
-    document.body.querySelector(".drag-clone")?.remove()
-    setDraggingIndex(-1)
-    updateItemOrder()
-  }
-
-  function updateItemOrder() {
-    items.forEach((item, index) => {
-      if (item.ordering !== index) {
-        updateItemMutation.mutate({
-          checklistID,
-          itemID: item.id,
-          ordering: index,
-          checked: item.checked,
-          content: item.content,
-        })
-        item.ordering = index
-      }
-    })
-  }
-
   if (isPending) return <div>Loading...</div>
 
   if (isError) return <div>Error: {error.message}</div>
@@ -253,23 +187,13 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           handleDeleteCompleted={handleDeleteCompleted}
         />
       </div>
-      {items.map((item: ChecklistItem, index: number) => (
-        <div
-          key={item.id}
-          onDragStart={(event) => handleDragStart(event, index)}
-          onDragEnter={(event) => handleDragEnter(event, index)}
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          className={`${locked ? "" : "cursor-move"}`}
-        >
-          <Item
-            updateItemMutation={updateItemMutation}
-            checklistID={checklistID}
-            item={item}
-            locked={locked}
-          />
-        </div>
-      ))}
+      <ItemList
+        items={items}
+        locked={locked}
+        updateItemMutation={updateItemMutation}
+        checklistID={checklistID}
+        setItems={setItems}
+      />
       {locked ? null : <NewItemForm handleNewItem={handleNewItem} />}
     </div>
   )

@@ -2,15 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { debounce } from "lodash"
-
-type ChecklistItem = {
-  id: string
-  content: string
-  checked: boolean
-  ordering: number
-  created_at: string
-  updated_at: string
-}
+import type { ChecklistItem } from "@/utils/types"
 
 type ItemProps = {
   checklistID: string
@@ -76,7 +68,6 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
     <div
       key={item.id}
       className="mt-1 flex flex-row rounded-sm bg-white p-3 shadow-sm"
-      draggable={!locked}
     >
       <input
         type="checkbox"
