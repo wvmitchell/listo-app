@@ -56,11 +56,11 @@ const ChecklistDescription = ({
     >
       <Link className="w-full" href={`/${id}`}>
         <div className="flex items-start gap-x-3">
-          <p className="text-sm font-semibold leading-6 text-gray-900">
+          <p className="text-state-900 text-base font-semibold leading-6">
             {title}
           </p>
         </div>
-        <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
+        <div className="text-state-500 mt-1 flex items-center gap-x-2 text-sm leading-5">
           <p className="whitespace-nowrap">
             Created <time dateTime={created_at}>{parseDate(created_at)}</time>
           </p>
@@ -74,18 +74,18 @@ const ChecklistDescription = ({
       </Link>
       <div className="flex flex-none items-center gap-x-4">
         <Menu as="div" className="relative flex-none">
-          <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
+          <MenuButton className="-m-2.5 block p-2.5 text-slate-500 hover:text-slate-900">
             <span className="sr-only">Open options</span>
             <EllipsisVerticalIcon aria-hidden="true" className="h-5 w-5" />
           </MenuButton>
           <MenuItems
             transition
-            className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+            className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-slate-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
           >
             <MenuItem>
               <a
                 href={`/${id}`}
-                className="block px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
+                className="block px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
               >
                 View<span className="sr-only">, {project.name}</span>
               </a>
@@ -93,7 +93,7 @@ const ChecklistDescription = ({
             <MenuItem>
               <a
                 href="#"
-                className="block px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
+                className="block px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
               >
                 Share<span className="sr-only">, {project.name}</span>
               </a>
@@ -101,7 +101,7 @@ const ChecklistDescription = ({
             <MenuItem>
               <span
                 onClick={handleDelete}
-                className="block cursor-pointer px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
+                className="block cursor-pointer px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
               >
                 Delete<span className="sr-only">, {project.name}</span>
               </span>
