@@ -95,7 +95,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
       {updating ? (
         <form
           onSubmit={() => setUpdating(false)}
-          className="m-0 w-full text-sm leading-5"
+          className="m-0 w-full text-base leading-5"
         >
           <span
             id={`item-input-${item.id}`}
@@ -103,14 +103,14 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
             onKeyDown={(e) => checkForEnter(e, () => setUpdating(false))}
             onInput={handleContentChange}
             onBlur={() => setUpdating(false)}
-            className="mx-4 block w-auto cursor-text resize-none border-0 p-0 text-sm leading-5 outline-none ring-0 focus:ring-0 active:ring-0"
+            className="mx-4 block w-auto cursor-text resize-none border-0 p-0 text-base leading-5 outline-none ring-0 focus:ring-0 active:ring-0"
             contentEditable
           ></span>
           <input type="text" value={content} hidden readOnly />
         </form>
       ) : (
         <p
-          className={`mx-4 ${locked ? "cursor-default" : "cursor-pointer"} min-w-10 whitespace-pre-wrap text-sm`}
+          className={`mx-4 ${locked ? "cursor-default" : "cursor-pointer"} min-w-10 whitespace-pre-wrap text-base`}
           onClick={handleClickItem}
         >
           {content}
