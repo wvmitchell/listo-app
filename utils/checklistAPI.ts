@@ -1,6 +1,6 @@
 "use server"
 
-import { BASE_URL, getUserID, getAuth0Token } from "./utils"
+import { BASE_URL, getUserID, getAuth0Token } from "./sessionUtils"
 
 async function getChecklists() {
   const token = await getAuth0Token()

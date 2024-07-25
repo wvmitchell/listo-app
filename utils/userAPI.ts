@@ -1,4 +1,4 @@
-import { BASE_URL, getAuth0Token, getUserID } from "./utils"
+import { BASE_URL, getAuth0Token, getUserID } from "./sessionUtils"
 
 export async function userExists() {
   const userId = await getUserID()

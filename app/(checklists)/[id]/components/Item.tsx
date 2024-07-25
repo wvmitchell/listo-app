@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { debounce } from "lodash"
 import { Bars2Icon } from "@heroicons/react/24/solid"
 import type { ChecklistItem } from "@/utils/types"
+import { checkForEnter } from "@/utils/domUtils"
 
 type ItemProps = {
   checklistID: string
@@ -16,6 +17,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
   const [isChecked, setIsChecked] = useState(item.checked)
   const [content, setContent] = useState(item.content)
   const [updating, setUpdating] = useState(false)
+  const textareaRef = useRef<HTMLSpanElement>(null)
 
   const updateItemCallback = useCallback(
     debounce((content: string) => {
@@ -35,13 +37,26 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
   useEffect(() => {
     if (updating) {
       const input = document.getElementById(`item-input-${item.id}`)
-      input?.focus()
+      if (input) {
+        input.innerText = content
+        input.focus()
+        moveCursorToEnd(input)
+      }
     }
   }, [updating, item.id])
 
   useEffect(() => {
     setIsChecked(item.checked)
   }, [item.checked])
+
+  function moveCursorToEnd(element: HTMLElement) {
+    const range = document.createRange()
+    const selection = window.getSelection()
+    range.selectNodeContents(element)
+    range.collapse(false) // Move the cursor to the end
+    selection?.removeAllRanges()
+    selection?.addRange(range)
+  }
 
   function toggleItem(e: React.ChangeEvent<HTMLInputElement>) {
     const checked = e.target.checked
@@ -56,8 +71,8 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
   }
 
   function handleContentChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setContent(e.target.value)
-    updateItemCallback(e.target.value)
+    setContent(e.target.innerText)
+    updateItemCallback(e.target.innerText)
   }
 
   function handleClickItem() {
@@ -82,24 +97,29 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
           onSubmit={() => setUpdating(false)}
           className="m-0 w-full text-sm leading-5"
         >
-          <input
+          <span
             id={`item-input-${item.id}`}
-            type="text"
-            value={content}
-            className="ml-4 w-full border-0 p-0 text-sm outline-none focus:ring-0 active:ring-0"
-            onChange={handleContentChange}
+            ref={textareaRef}
+            onKeyDown={(e) => checkForEnter(e, () => setUpdating(false))}
+            onInput={handleContentChange}
             onBlur={() => setUpdating(false)}
-          />
+            className="mx-4 block w-auto cursor-text resize-none border-0 p-0 text-sm leading-5 outline-none ring-0 focus:ring-0 active:ring-0"
+            contentEditable
+          ></span>
+          <input type="text" value={content} hidden readOnly />
         </form>
       ) : (
         <p
-          className={`mx-4 ${locked ? "cursor-default" : "cursor-pointer"} text-sm`}
+          className={`mx-4 ${locked ? "cursor-default" : "cursor-pointer"} min-w-10 whitespace-pre-wrap text-sm`}
           onClick={handleClickItem}
         >
           {content}
         </p>
       )}
-      <div className="ml-auto w-5 content-center" data-move-icon>
+      <div
+        className={`ml-auto w-5 content-center ${locked ? "hidden" : ""}`}
+        data-move-icon
+      >
         <Bars2Icon
           className="h-5 w-5 cursor-move text-slate-500"
           aria-hidden="true"
