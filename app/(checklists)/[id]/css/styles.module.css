@@ -1,0 +1,5 @@
+.disableMovement {
+    pointer-events: none;
+    overscroll-behavior: none;
+    overflow: hidden;
+}

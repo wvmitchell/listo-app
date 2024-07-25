@@ -1,7 +1,8 @@
-import { useState, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import Item from "./Item"
 import type { ChecklistItem } from "@/utils/types"
 import { compact } from "lodash"
+import styles from "../css/styles.module.css"
 
 type ItemListProps = {
   items: ChecklistItem[]
@@ -23,6 +24,18 @@ const ItemList = ({
   const [draggingIndex, setDraggingIndex] = useState(-1)
   const [touchedItem, setTouchedItem] = useState<ChecklistItem | null>(null)
   const touchOffset = useRef({ x: 0, y: 0 })
+
+  useEffect(() => {
+    if (touchedItem) {
+      document.body.classList.add(styles.disableMovement)
+    } else {
+      document.body.classList.remove(styles.disableMovement)
+    }
+
+    return () => {
+      document.body.classList.remove(styles.disableMovement)
+    }
+  }, [touchedItem])
 
   function handleDragStart(e: React.DragEvent<HTMLDivElement>, index: number) {
     setDraggingIndex(index)
