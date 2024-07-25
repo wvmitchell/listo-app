@@ -112,7 +112,6 @@ const ItemList = ({
 
     // collect the item being touched and set it in state
     setTouchedItem(item)
-    setTimeout(() => document.body.classList.add(styles.disableMovement), 0)
 
     // get the dimensions and position of the element
     const rect = target.getBoundingClientRect()
@@ -136,6 +135,7 @@ const ItemList = ({
 
   function handleTouchMove(e: React.TouchEvent<HTMLDivElement>) {
     if (!touchedItem) return
+    document.body.classList.add(styles.disableMovement)
 
     // collect touch and element being dragged
     const touch = e.touches[0]
