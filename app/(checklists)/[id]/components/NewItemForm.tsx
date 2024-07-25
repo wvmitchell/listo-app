@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react"
 import { PlusCircleIcon } from "@heroicons/react/24/outline"
+import { checkForEnter } from "@/utils/domUtils"
 
 type NewItemFormProps = {
-  handleNewItem: (e: React.FormEvent<HTMLFormElement>) => void
+  handleNewItem: (content: string) => void
 }
 
 const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
@@ -10,6 +11,7 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
   const [showForm, setShowForm] = useState(false)
   const [content, setContent] = useState("")
   const textareaRef = useRef<HTMLSpanElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
     if (showForm) {
@@ -31,11 +33,18 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    handleNewItem(e)
+    e.preventDefault()
     if (textareaRef.current) {
       textareaRef.current.innerText = ""
     }
+    handleNewItem(content)
     setContent("")
+  }
+
+  function submitForm() {
+    formRef.current?.dispatchEvent(
+      new Event("submit", { bubbles: true, cancelable: true }),
+    )
   }
 
   return (
@@ -47,6 +56,7 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
         <PlusCircleIcon className="size-[24px] text-slate-700" />
       </button>
       <form
+        ref={formRef}
         onSubmit={handleSubmit}
         hidden={!showForm || !formOpen}
         className="grid w-full grid-cols-[1fr_auto] gap-2 py-3 pr-3"
@@ -58,6 +68,7 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
           role="textbox"
           hidden={!showForm || !formOpen}
           onInput={handleSpanInput}
+          onKeyDown={(e) => checkForEnter(e, submitForm)}
           className="block w-full resize-none overflow-hidden rounded-sm border-0 p-0 px-1 text-sm leading-5 outline-none ring-0 focus:ring-0 active:ring-0"
           contentEditable
         ></span>

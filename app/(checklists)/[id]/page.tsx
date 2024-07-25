@@ -138,17 +138,13 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
     updateTitleCallback(e.target.value, locked)
   }
 
-  function handleNewItem(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    let form = e.target as HTMLFormElement
-    let formData = new FormData(form)
+  function handleNewItem(content: string) {
     let ordering = items.length ? items[items.length - 1].ordering + 1 : 0
     newItemMutation.mutate({
       checklistID,
-      content: formData.get("new-item") as string,
+      content,
       ordering,
     })
-    form.reset()
   }
 
   function handleLockChecklist() {
