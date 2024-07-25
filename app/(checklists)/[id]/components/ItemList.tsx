@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Item from "./Item"
 import type { ChecklistItem } from "@/utils/types"
+import { compact } from "lodash"
 
 type ItemListProps = {
   items: ChecklistItem[]
@@ -17,7 +18,11 @@ const ItemList = ({
   updateItemMutation,
   setItems,
 }: ItemListProps) => {
+  // Note: draggingIndex is used when reordering is happening in a desktop environment.
+  // touchedItem is used when reordering is happening in a touch environment (mobile).
   const [draggingIndex, setDraggingIndex] = useState(-1)
+  const [touchedItem, setTouchedItem] = useState<ChecklistItem | null>(null)
+  const touchOffset = useRef({ x: 0, y: 0 })
 
   function handleDragStart(e: React.DragEvent<HTMLDivElement>, index: number) {
     setDraggingIndex(index)
@@ -76,16 +81,117 @@ const ItemList = ({
     })
   }
 
+  function handleTouchStart(
+    e: React.TouchEvent<HTMLDivElement>,
+    item: ChecklistItem,
+  ) {
+    // collect the item being touched and set it in state
+    setTouchedItem(item)
+
+    // collect the touch and the element
+    const touch = e.touches[0]
+    const target = e.currentTarget as HTMLDivElement
+
+    // get the dimensions and position of the element
+    const rect = target.getBoundingClientRect()
+
+    // create a clone of the targar element and position it off the screen
+    const clone = target.cloneNode(true) as HTMLDivElement
+    clone.style.position = "absolute"
+    clone.style.top = "-9999px"
+    clone.style.width = `${rect.width}px`
+    clone.style.height = `${rect.height}px`
+    clone.classList.add("drag-clone")
+    document.body.appendChild(clone)
+
+    // set the touch offset to determine the position of the touch relative to the
+    // top left corner of the element
+    touchOffset.current = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    }
+  }
+
+  function handleTouchMove(e: React.TouchEvent<HTMLDivElement>) {
+    if (!touchedItem) return
+
+    // collect touch and element being dragged
+    const touch = e.touches[0]
+    const target = e.currentTarget as HTMLDivElement
+
+    // hide the original element
+    target.classList.add("opacity-0")
+
+    // collect the clone element and set its position directly over the touch
+    const clone = document.body.querySelector(".drag-clone") as HTMLDivElement
+    clone.style.position = "absolute"
+    clone.style.left = `${touch.clientX - touchOffset.current.x}px`
+    clone.style.top = `${touch.clientY - touchOffset.current.y}px`
+
+    // collect all the item dom elements and convert them to an array
+    const container = document.getElementById("item-container")
+    const itemsArray = Array.from(container?.children || [])
+
+    // loop through the items to determine placement of the target element
+    itemsArray.forEach((item) => {
+      // find the deminsions and position of the item
+      const rect = item.getBoundingClientRect()
+      const middleY = rect.top + rect.height / 2
+
+      // if the position of the touch is within the top half of the item, place the target element before the item
+      // if the position of the touch is within the bottom half of the item, place the target element after the item
+      // otherwise, do nothing
+      if (touch.clientY > rect.top && touch.clientY < middleY) {
+        container?.insertBefore(target, item)
+      } else if (touch.clientY > middleY && touch.clientY < rect.bottom) {
+        container?.insertBefore(target, item.nextSibling)
+      }
+    })
+
+    // map over the itemsArray and use the order to collect the new order of the items
+    const newItems = itemsArray.map((domElements) => {
+      const domItem = domElements as HTMLDivElement
+      return items.find((item) => item.id === domItem.dataset.itemId)
+    })
+
+    // update the items state with the new order of the items
+    setItems(compact(newItems))
+
+    // update the order of the items in the database
+    updateItemOrder()
+  }
+
+  function handleTouchEnd(e: React.TouchEvent<HTMLDivElement>) {
+    if (!touchedItem) return
+
+    // show the original element
+    let target = e.currentTarget as HTMLDivElement
+    target.classList.remove("opacity-0")
+
+    // remove the clone element
+    document.body.querySelector(".drag-clone")?.remove()
+
+    // reset the state
+    setTouchedItem(null)
+  }
+
   return (
-    <div>
+    <div id="item-container">
       {items.map((item: ChecklistItem, index: number) => (
         <div
           key={item.id}
+          data-item-id={item.id}
           onDragStart={(event) => handleDragStart(event, index)}
           onDragEnter={(event) => handleDragEnter(event, index)}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
+          onTouchStart={(event) => handleTouchStart(event, item)}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
           className={`${locked ? "" : "cursor-move"}`}
+          draggable={!locked}
+          data-index={index}
         >
           <Item
             updateItemMutation={updateItemMutation}

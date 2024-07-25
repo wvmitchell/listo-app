@@ -68,7 +68,6 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
     <div
       key={item.id}
       className="mt-1 flex flex-row rounded-sm bg-white p-3 shadow-sm"
-      draggable={!locked}
     >
       <input
         type="checkbox"
