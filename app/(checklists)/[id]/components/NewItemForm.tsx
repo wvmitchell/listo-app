@@ -8,11 +8,12 @@ type NewItemFormProps = {
 const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
   const [formOpen, setFormOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [content, setContent] = useState("")
+  const textareaRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
     if (showForm) {
-      inputRef.current?.focus()
+      textareaRef.current?.focus()
     }
   }, [showForm])
 
@@ -24,26 +25,43 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
     setShowForm(formOpen)
   }
 
+  function handleSpanInput(e: React.FormEvent<HTMLSpanElement>) {
+    let span = e.target as HTMLSpanElement
+    setContent(span.innerText)
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    handleNewItem(e)
+    if (textareaRef.current) {
+      textareaRef.current.innerText = ""
+    }
+    setContent("")
+  }
+
   return (
     <div
-      className={`mt-1 grid grid-cols-[auto_1fr] items-center rounded-sm bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-10"}`}
+      className={`mb-4 mt-1 grid grid-cols-[auto_1fr] items-center rounded-sm bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-10"}`}
       onTransitionEnd={handleTranistionEnd}
     >
       <button className="py-[0.65rem] pl-2 pr-[7px]" onClick={handleFormToggle}>
         <PlusCircleIcon className="size-[24px] text-slate-700" />
       </button>
       <form
-        onSubmit={handleNewItem}
+        onSubmit={handleSubmit}
         hidden={!showForm || !formOpen}
-        className="grid w-full grid-cols-[1fr_auto] gap-2 py-2 pr-3"
+        className="grid w-full grid-cols-[1fr_auto] gap-2 py-3 pr-3"
       >
-        <input
-          ref={inputRef}
-          type="text"
-          name="new-item"
+        {/* This span serves the purpose of having a resizable text input, but the 
+            hidden input is what is handled in the form submission */}
+        <span
+          ref={textareaRef}
+          role="textbox"
           hidden={!showForm || !formOpen}
-          className="rounded-sm border-0 p-0 px-1 text-sm outline-none ring-0 focus:ring-0 active:ring-0"
-        />
+          onInput={handleSpanInput}
+          className={`block w-full resize-none overflow-hidden rounded-sm border-0 p-0 px-1 text-sm leading-5 outline-none ring-0 focus:ring-0 active:ring-0`}
+          contentEditable
+        ></span>
+        <input name="new-item" type="text" value={content} hidden />
         <button
           type="submit"
           hidden={!showForm || !formOpen}
