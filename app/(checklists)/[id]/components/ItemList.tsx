@@ -117,13 +117,13 @@ const ItemList = ({
     const rect = target.getBoundingClientRect()
 
     // create a clone of the targar element and position it off the screen
-    const clone = target.cloneNode(true) as HTMLDivElement
-    clone.style.position = "absolute"
-    clone.style.top = "-9999px"
-    clone.style.width = `${rect.width}px`
-    clone.style.height = `${rect.height}px`
-    clone.classList.add("drag-clone")
-    document.body.appendChild(clone)
+    //const clone = target.cloneNode(true) as HTMLDivElement
+    //clone.style.position = "absolute"
+    //clone.style.top = "-9999px"
+    //clone.style.width = `${rect.width}px`
+    //clone.style.height = `${rect.height}px`
+    //clone.classList.add("drag-clone")
+    //document.body.appendChild(clone)
 
     // set the touch offset to determine the position of the touch relative to the
     // top left corner of the element
@@ -135,20 +135,19 @@ const ItemList = ({
 
   function handleTouchMove(e: React.TouchEvent<HTMLDivElement>) {
     if (!touchedItem) return
-    if (!document.body.classList.contains(styles.disableMovement)) return
 
     // collect touch and element being dragged
     const touch = e.touches[0]
     const target = e.currentTarget as HTMLDivElement
 
     // hide the original element
-    target.classList.add("opacity-0")
+    //target.classList.add("opacity-0")
 
     // collect the clone element and set its position directly over the touch
-    const clone = document.body.querySelector(".drag-clone") as HTMLDivElement
-    clone.style.position = "absolute"
-    clone.style.left = `${touch.clientX - touchOffset.current.x}px`
-    clone.style.top = `${touch.clientY - touchOffset.current.y + window.scrollY}px`
+    //const clone = document.body.querySelector(".drag-clone") as HTMLDivElement
+    //clone.style.position = "absolute"
+    //clone.style.left = `${touch.clientX - touchOffset.current.x}px`
+    //clone.style.top = `${touch.clientY - touchOffset.current.y + window.scrollY}px`
 
     // collect all the item dom elements and convert them to an array
     const container = document.getElementById("item-container")
@@ -191,7 +190,7 @@ const ItemList = ({
     target.classList.remove("opacity-0")
 
     // remove the clone element
-    document.body.querySelector(".drag-clone")?.remove()
+    //document.body.querySelector(".drag-clone")?.remove()
 
     // reset the state
     setTouchedItem(null)
