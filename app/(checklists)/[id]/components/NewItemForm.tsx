@@ -61,8 +61,6 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
         hidden={!showForm || !formOpen}
         className="grid w-full grid-cols-[1fr_auto] gap-2 py-3 pr-3"
       >
-        {/* This span serves the purpose of having a resizable text input, but the 
-            hidden input is what is handled in the form submission */}
         <span
           ref={textareaRef}
           role="textbox"
