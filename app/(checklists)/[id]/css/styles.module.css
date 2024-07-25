@@ -2,4 +2,6 @@
     pointer-events: none;
     overscroll-behavior: none;
     overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
 }
