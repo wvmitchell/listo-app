@@ -143,7 +143,7 @@ const ItemList = ({
     const clone = document.body.querySelector(".drag-clone") as HTMLDivElement
     clone.style.position = "absolute"
     clone.style.left = `${touch.clientX - touchOffset.current.x}px`
-    clone.style.top = `${touch.clientY - touchOffset.current.y}px`
+    clone.style.top = `${touch.clientY - touchOffset.current.y + window.scrollY}px`
 
     // collect all the item dom elements and convert them to an array
     const container = document.getElementById("item-container")
