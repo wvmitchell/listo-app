@@ -34,7 +34,7 @@ const ChecklistsPage = () => {
             key={checklist.id}
             id={checklist.id}
             title={checklist.title}
-            created_at={checklist.created_at}
+            locked={checklist.locked}
             updated_at={checklist.updated_at}
           />
         ))}
