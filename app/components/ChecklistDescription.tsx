@@ -1,7 +1,7 @@
 "use client"
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
-import { EllipsisVerticalIcon } from "@heroicons/react/24/solid"
+import { EllipsisVerticalIcon, LockClosedIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { deleteChecklist } from "@/utils/checklistAPI"
@@ -10,14 +10,14 @@ type ChecklistDescriptionProps = {
   key: any
   id: string
   title: string
-  created_at: string
+  locked: boolean
   updated_at: string
 }
 
 const ChecklistDescription = ({
   id,
   title,
-  created_at,
+  locked,
   updated_at,
 }: ChecklistDescriptionProps) => {
   const queryClient = useQueryClient()
@@ -31,6 +31,7 @@ const ChecklistDescription = ({
   })
 
   function handleDelete() {
+    if (locked) return
     deleteChecklistMutation.mutate({ id })
   }
 
@@ -55,18 +56,17 @@ const ChecklistDescription = ({
       className="mt-1 flex items-center justify-between rounded-sm bg-white p-3 hover:bg-slate-50"
     >
       <Link className="w-full" href={`/${id}`}>
-        <div className="flex items-start gap-x-3">
+        <div className="flex items-center gap-x-3">
           <p className="text-state-900 text-base font-semibold leading-6">
             {title}
           </p>
+          {locked && (
+            <span className="mb-1 ml-1">
+              <LockClosedIcon className="h-4 w-4 text-slate-500" />
+            </span>
+          )}
         </div>
         <div className="text-state-500 mt-1 flex items-center gap-x-2 text-sm leading-5">
-          <p className="whitespace-nowrap">
-            Created <time dateTime={created_at}>{parseDate(created_at)}</time>
-          </p>
-          <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
-            <circle r={1} cx={1} cy={1} />
-          </svg>
           <p className="whitespace-nowrap">
             Updated <time dateTime={updated_at}>{parseDate(updated_at)}</time>
           </p>
@@ -98,14 +98,16 @@ const ChecklistDescription = ({
                 Share<span className="sr-only">, {project.name}</span>
               </a>
             </MenuItem>
-            <MenuItem>
-              <span
-                onClick={handleDelete}
-                className="block cursor-pointer px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
-              >
-                Delete<span className="sr-only">, {project.name}</span>
-              </span>
-            </MenuItem>
+            {!locked && (
+              <MenuItem>
+                <span
+                  onClick={handleDelete}
+                  className="block cursor-pointer px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
+                >
+                  Delete<span className="sr-only">, {project.name}</span>
+                </span>
+              </MenuItem>
+            )}
           </MenuItems>
         </Menu>
       </div>
