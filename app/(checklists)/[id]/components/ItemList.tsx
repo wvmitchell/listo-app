@@ -58,7 +58,6 @@ const ItemList = ({
 
   const touchStartCallback = useCallback(
     function handleTouchStart(e: TouchEvent) {
-      //console.log("touchstart, touchedItem: ", touchedItem)
       // can't reorder items if the list is locked
       if (locked) return
 
@@ -101,7 +100,6 @@ const ItemList = ({
   const touchMoveCallback = useCallback(
     function handleTouchMove(e: TouchEvent) {
       if (!touchedItem) return
-      //console.log("touchmove, touchedItem: ", touchedItem)
 
       // collect touch and element being dragged
       const touch = e.touches[0]
@@ -153,7 +151,6 @@ const ItemList = ({
   const touchEndCallback = useCallback(
     function handleTouchEnd(e: TouchEvent) {
       if (!touchedItem) return
-      //console.log("touchend, touchedItem: ", touchedItem)
 
       // show the original element
       let target = e.currentTarget as HTMLDivElement
@@ -164,7 +161,6 @@ const ItemList = ({
 
       // reset the state
       setTouchedItem(null)
-      console.log("touchedItem: ", touchedItem)
 
       e.preventDefault()
     },
@@ -195,21 +191,6 @@ const ItemList = ({
       })
     }
   })
-
-  //const touchEventsCallback = useCallback(
-  //  (node: HTMLDivElement) => {
-
-  //    if (node) {
-  //      node.addEventListener("touchstart", handleTouchStart, {
-  //        passive: false,
-  //      })
-  //      node.addEventListener("touchmove", handleTouchMove, { passive: false })
-  //      node.addEventListener("touchend", handleTouchEnd, { passive: false })
-  //      node.addEventListener("touchcancel", handleTouchEnd, { passive: false })
-  //    }
-  //  },
-  //  [items, locked, setItems],
-  //)
 
   function handleDragStart(e: React.DragEvent<HTMLDivElement>, index: number) {
     if (locked) return
