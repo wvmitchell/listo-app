@@ -11,10 +11,10 @@ import {
   updateItem,
   deleteItem,
 } from "@/utils/checklistAPI"
-import type { ChecklistItem } from "@/utils/types"
 import ChecklistMenu from "./components/ChecklistMenu"
 import NewItemForm from "./components/NewItemForm"
 import ItemList from "./components/ItemList"
+import type { ChecklistItem } from "@/utils/types"
 
 type ChecklistParams = {
   id: string
@@ -163,7 +163,9 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
 
   if (isPending) return <div>Loading...</div>
 
-  if (isError) return <div>Error: {error.message}</div>
+  if (isError) {
+    throw error
+  }
 
   return (
     <div>
