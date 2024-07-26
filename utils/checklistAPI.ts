@@ -1,17 +1,14 @@
 "use server"
 
-import { BASE_URL, getUserID, getAuth0Token } from "./sessionUtils"
+import { getAuth0Token } from "./sessionUtils"
 
 async function getChecklists() {
   const token = await getAuth0Token()
-  const userID = await getUserID()
-  const res = await fetch(`${BASE_URL}/checklists`, {
+  const res = await fetch(`${process.env.BASE_URL}/checklists`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-      userID,
     },
     cache: "no-store",
   })
@@ -24,14 +21,11 @@ async function getChecklists() {
 
 async function getChecklist(id: string) {
   const token = await getAuth0Token()
-  const userID = await getUserID()
-  const res = await fetch(`${BASE_URL}/checklist/${id}`, {
+  const res = await fetch(`${process.env.BASE_URL}/checklist/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-      userID,
     },
   })
 
@@ -43,14 +37,11 @@ async function getChecklist(id: string) {
 
 async function createChecklist() {
   const token = await getAuth0Token()
-  const userID = await getUserID()
-  const res = await fetch(`${BASE_URL}/checklist`, {
+  const res = await fetch(`${process.env.BASE_URL}/checklist`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-      userID,
     },
     body: JSON.stringify({ title: "New Listo (click to edit)" }),
   })
@@ -68,14 +59,11 @@ async function updateChecklist(
   locked: boolean,
 ) {
   const token = await getAuth0Token()
-  const userID = await getUserID()
-  const res = await fetch(`${BASE_URL}/checklist/${checklistID}`, {
+  const res = await fetch(`${process.env.BASE_URL}/checklist/${checklistID}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-      userID,
     },
     body: JSON.stringify({ title, locked }),
   })
@@ -89,14 +77,11 @@ async function updateChecklist(
 
 async function deleteChecklist(checklistID: string) {
   const token = await getAuth0Token()
-  const userID = await getUserID()
-  const res = await fetch(`${BASE_URL}/checklist/${checklistID}`, {
+  const res = await fetch(`${process.env.BASE_URL}/checklist/${checklistID}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-      userID,
     },
   })
 
@@ -113,17 +98,17 @@ async function createItem(
   ordering: number,
 ) {
   const token = await getAuth0Token()
-  const userID = await getUserID()
-  const res = await fetch(`${BASE_URL}/checklist/${checklistID}/item`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-      userID,
+  const res = await fetch(
+    `${process.env.BASE_URL}/checklist/${checklistID}/item`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ content, ordering }),
     },
-    body: JSON.stringify({ content, ordering }),
-  })
+  )
 
   if (!res.ok) {
     throw new Error(`Failed to create item: ${res.status}`)
@@ -139,16 +124,13 @@ async function updateItem(
   ordering: number,
 ) {
   const token = await getAuth0Token()
-  const userID = await getUserID()
   const res = await fetch(
-    `${BASE_URL}/checklist/${checklistID}/item/${itemID}`,
+    `${process.env.BASE_URL}/checklist/${checklistID}/item/${itemID}`,
     {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-        // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-        userID,
       },
       body: JSON.stringify({ content, checked, ordering }),
     },
@@ -162,16 +144,13 @@ async function updateItem(
 
 async function toggleAllItems(checklistID: string, checked: boolean) {
   const token = await getAuth0Token()
-  const userID = await getUserID()
   const res = await fetch(
-    `${BASE_URL}/checklist/${checklistID}/items?checked=${checked}`,
+    `${process.env.BASE_URL}/checklist/${checklistID}/items?checked=${checked}`,
     {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-        // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-        userID,
       },
     },
   )
@@ -185,16 +164,13 @@ async function toggleAllItems(checklistID: string, checked: boolean) {
 
 async function deleteItem(checklistID: string, itemID: string) {
   const token = await getAuth0Token()
-  const userID = await getUserID()
   const res = await fetch(
-    `${BASE_URL}/checklist/${checklistID}/item/${itemID}`,
+    `${process.env.BASE_URL}/checklist/${checklistID}/item/${itemID}`,
     {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-        // TODO: stop passsing userID in headers, instead parse it out in the API from the token
-        userID,
       },
     },
   )
