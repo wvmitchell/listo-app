@@ -56,126 +56,160 @@ const ItemList = ({
     updateItemOrder()
   }, [items, checklistID, updateItemMutation])
 
-  // All these touch event handlers need to be in the callback because they need access to
-  // the items state, and the event handlers need to be active, so that the default behavior
-  // of the touch events can be prevented.
-  const touchEventsCallback = useCallback(
-    (node: HTMLDivElement) => {
-      function handleTouchStart(e: TouchEvent) {
-        // can't reorder items if the list is locked
-        if (locked) return
+  const touchStartCallback = useCallback(
+    function handleTouchStart(e: TouchEvent) {
+      //console.log("touchstart, touchedItem: ", touchedItem)
+      // can't reorder items if the list is locked
+      if (locked) return
 
-        // return unless the touch even happened on the move-icon
-        const eventTarget = e.target as HTMLDivElement
-        if (!eventTarget.dataset.moveIcon) return
+      // return unless the touch even happened on the move-icon
+      const eventTarget = e.target as HTMLDivElement
+      if (!eventTarget.dataset.moveIcon) return
 
-        // collect the touch and the element
-        const touch = e.touches[0]
-        const target = e.currentTarget as HTMLDivElement
+      // collect the touch and the element
+      const touch = e.touches[0]
+      const target = e.currentTarget as HTMLDivElement
 
-        // collect the item being touched and set it in state
-        let foundItem = items.find((item) => item.id === target.dataset.itemId)
-        foundItem && setTouchedItem(foundItem)
+      // collect the item being touched and set it in state
+      let foundItem = items.find((item) => item.id === target.dataset.itemId)
+      foundItem && setTouchedItem(foundItem)
 
-        // get the dimensions and position of the element
-        const rect = target.getBoundingClientRect()
+      // get the dimensions and position of the element
+      const rect = target.getBoundingClientRect()
 
-        // create a clone of the targar element and position it off the screen
-        const clone = target.cloneNode(true) as HTMLDivElement
-        clone.style.position = "absolute"
-        clone.style.top = "-9999px"
-        clone.style.width = `${rect.width}px`
-        clone.style.height = `${rect.height}px`
-        clone.classList.add("drag-clone")
-        document.body.appendChild(clone)
+      // create a clone of the targar element and position it off the screen
+      const clone = target.cloneNode(true) as HTMLDivElement
+      clone.style.position = "absolute"
+      clone.style.top = "-9999px"
+      clone.style.width = `${rect.width}px`
+      clone.style.height = `${rect.height}px`
+      clone.classList.add("drag-clone")
+      document.body.appendChild(clone)
 
-        // set the touch offset to determine the position of the touch relative to the
-        // top left corner of the element
-        touchOffset.current = {
-          x: touch.clientX - rect.left,
-          y: touch.clientY - rect.top,
-        }
-
-        e.preventDefault()
+      // set the touch offset to determine the position of the touch relative to the
+      // top left corner of the element
+      touchOffset.current = {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
       }
 
-      function handleTouchMove(e: TouchEvent) {
-        if (!touchedItem) return
-
-        // collect touch and element being dragged
-        const touch = e.touches[0]
-        const target = e.currentTarget as HTMLDivElement
-
-        // hide the original element
-        target.classList.add("opacity-0")
-
-        // collect the clone element and set its position directly over the touch
-        const clone = document.body.querySelector(
-          ".drag-clone",
-        ) as HTMLDivElement
-        clone.style.position = "absolute"
-        clone.style.left = `${touch.clientX - touchOffset.current.x}px`
-        clone.style.top = `${touch.clientY - touchOffset.current.y + window.scrollY}px`
-
-        // collect all the item dom elements and convert them to an array
-        const container = document.getElementById("item-container")
-        const itemsArray = Array.from(container?.children || [])
-
-        // loop through the items to determine placement of the target element
-        itemsArray.forEach((item) => {
-          // find the deminsions and position of the item
-          const rect = item.getBoundingClientRect()
-          const middleY = rect.top + rect.height / 2
-
-          // if the position of the touch is within the top half of the item, place the target element before the item
-          // if the position of the touch is within the bottom half of the item, place the target element after the item
-          // otherwise, do nothing
-          if (touch.clientY > rect.top && touch.clientY < middleY) {
-            container?.insertBefore(target, item)
-          } else if (touch.clientY > middleY && touch.clientY < rect.bottom) {
-            container?.insertBefore(target, item.nextSibling)
-          }
-        })
-
-        // map over the itemsArray and use the order to collect the new order of the items
-        const newItems = itemsArray.map((domElements) => {
-          const domItem = domElements as HTMLDivElement
-          return items.find((item) => item.id === domItem.dataset.itemId)
-        })
-
-        // update the items state with the new order of the items
-        setItems(compact(newItems))
-
-        e.preventDefault()
-      }
-
-      function handleTouchEnd(e: TouchEvent) {
-        if (!touchedItem) return
-
-        // show the original element
-        let target = e.currentTarget as HTMLDivElement
-        target.classList.remove("opacity-0")
-
-        // remove the clone element
-        document.body.querySelector(".drag-clone")?.remove()
-
-        // reset the state
-        setTouchedItem(null)
-
-        e.preventDefault()
-      }
-
-      if (node) {
-        node.addEventListener("touchstart", handleTouchStart, {
-          passive: false,
-        })
-        node.addEventListener("touchmove", handleTouchMove, { passive: false })
-        node.addEventListener("touchend", handleTouchEnd, { passive: false })
-        node.addEventListener("touchcancel", handleTouchEnd, { passive: false })
-      }
+      e.preventDefault()
     },
-    [items, locked, setItems, touchedItem],
+    [items, locked],
   )
+
+  const touchMoveCallback = useCallback(
+    function handleTouchMove(e: TouchEvent) {
+      if (!touchedItem) return
+      //console.log("touchmove, touchedItem: ", touchedItem)
+
+      // collect touch and element being dragged
+      const touch = e.touches[0]
+      const target = e.currentTarget as HTMLDivElement
+
+      // hide the original element
+      target.classList.add("opacity-0")
+
+      // collect the clone element and set its position directly over the touch
+      const clone = document.body.querySelector(".drag-clone") as HTMLDivElement
+      clone.style.position = "absolute"
+      clone.style.left = `${touch.clientX - touchOffset.current.x}px`
+      clone.style.top = `${touch.clientY - touchOffset.current.y + window.scrollY}px`
+
+      // collect all the item dom elements and convert them to an array
+      const container = document.getElementById("item-container")
+      const itemsArray = Array.from(container?.children || [])
+
+      // loop through the items to determine placement of the target element
+      itemsArray.forEach((item) => {
+        // find the deminsions and position of the item
+        const rect = item.getBoundingClientRect()
+        const middleY = rect.top + rect.height / 2
+
+        // if the position of the touch is within the top half of the item, place the target element before the item
+        // if the position of the touch is within the bottom half of the item, place the target element after the item
+        // otherwise, do nothing
+        if (touch.clientY > rect.top && touch.clientY < middleY) {
+          container?.insertBefore(target, item)
+        } else if (touch.clientY > middleY && touch.clientY < rect.bottom) {
+          container?.insertBefore(target, item.nextSibling)
+        }
+      })
+
+      // map over the itemsArray and use the order to collect the new order of the items
+      const newItems = itemsArray.map((domElements) => {
+        const domItem = domElements as HTMLDivElement
+        return items.find((item) => item.id === domItem.dataset.itemId)
+      })
+
+      // update the items state with the new order of the items
+      setItems(compact(newItems))
+
+      e.preventDefault()
+    },
+    [items, setItems, touchedItem],
+  )
+
+  const touchEndCallback = useCallback(
+    function handleTouchEnd(e: TouchEvent) {
+      if (!touchedItem) return
+      //console.log("touchend, touchedItem: ", touchedItem)
+
+      // show the original element
+      let target = e.currentTarget as HTMLDivElement
+      target.classList.remove("opacity-0")
+
+      // remove the clone element
+      document.body.querySelector(".drag-clone")?.remove()
+
+      // reset the state
+      setTouchedItem(null)
+      console.log("touchedItem: ", touchedItem)
+
+      e.preventDefault()
+    },
+    [touchedItem],
+  )
+
+  useEffect(() => {
+    const container = document.getElementById("item-container")
+    const itemsArray = Array.from(container?.children || [])
+
+    itemsArray.forEach((i) => {
+      const item = i as HTMLDivElement
+      item.addEventListener("touchstart", touchStartCallback, {
+        passive: false,
+      })
+      item.addEventListener("touchmove", touchMoveCallback, { passive: false })
+      item.addEventListener("touchend", touchEndCallback, { passive: false })
+      item.addEventListener("touchcancel", touchEndCallback, { passive: false })
+    })
+
+    return () => {
+      itemsArray.forEach((i) => {
+        const item = i as HTMLDivElement
+        item.removeEventListener("touchstart", touchStartCallback)
+        item.removeEventListener("touchmove", touchMoveCallback)
+        item.removeEventListener("touchend", touchEndCallback)
+        item.removeEventListener("touchcancel", touchEndCallback)
+      })
+    }
+  })
+
+  //const touchEventsCallback = useCallback(
+  //  (node: HTMLDivElement) => {
+
+  //    if (node) {
+  //      node.addEventListener("touchstart", handleTouchStart, {
+  //        passive: false,
+  //      })
+  //      node.addEventListener("touchmove", handleTouchMove, { passive: false })
+  //      node.addEventListener("touchend", handleTouchEnd, { passive: false })
+  //      node.addEventListener("touchcancel", handleTouchEnd, { passive: false })
+  //    }
+  //  },
+  //  [items, locked, setItems],
+  //)
 
   function handleDragStart(e: React.DragEvent<HTMLDivElement>, index: number) {
     if (locked) return
@@ -224,7 +258,6 @@ const ItemList = ({
       {items.map((item: ChecklistItem, index: number) => (
         <div
           key={item.id}
-          ref={touchEventsCallback}
           data-item-id={item.id}
           onDragStart={(event) => handleDragStart(event, index)}
           onDragEnter={(event) => handleDragEnter(event, index)}
