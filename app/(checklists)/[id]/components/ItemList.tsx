@@ -82,7 +82,7 @@ const ItemList = ({
       clone.style.top = "-9999px"
       clone.style.width = `${rect.width}px`
       clone.style.height = `${rect.height}px`
-      clone.classList.add("drag-clone")
+      clone.classList.add("drag-clone", "shadow-md")
       document.body.appendChild(clone)
 
       // set the touch offset to determine the position of the touch relative to the
