@@ -1,10 +1,12 @@
 import { setupHoneybadger } from "@honeybadger-io/nextjs"
 
-const nextConfig = {}
+const nextConfig = {
+  productionBrowserSourceMaps: true,
+}
 
 const honeybadgerNextJsConfig = {
   // Disable source map upload (optional)
-  disableSourceMapUpload: true,
+  disableSourceMapUpload: false,
 
   // Hide debug messages (optional)
   silent: true,
