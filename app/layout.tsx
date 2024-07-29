@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { UserProvider } from "@auth0/nextjs-auth0/client"
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({
       <UserProvider>
         <body>
           <Analytics />
+          <SpeedInsights />
           <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
             {children}
           </div>
