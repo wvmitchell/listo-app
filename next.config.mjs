@@ -27,8 +27,8 @@ const honeybadgerNextJsConfig = {
         process.env.NEXT_PUBLIC_VERCEL_ENV ||
         process.env.VERCEL_ENV ||
         process.env.NODE_ENV,
-      repository: "https://url.to.git.repository",
-      localUsername: "username",
+      repository: "https://github.com/wvmitchell/listo-app",
+      localUsername: "wvmitchell",
     },
   },
 }
