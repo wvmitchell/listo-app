@@ -4,7 +4,7 @@ const nextConfig = {}
 
 const honeybadgerNextJsConfig = {
   // Disable source map upload (optional)
-  disableSourceMapUpload: false,
+  disableSourceMapUpload: true,
 
   // Hide debug messages (optional)
   silent: true,
