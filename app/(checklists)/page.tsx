@@ -21,7 +21,7 @@ const ChecklistsPage = () => {
   }, [data, isSuccess])
 
   if (isPending) return <div>Loading...</div>
-  if (error) return <div>Error: {error.message}</div>
+  if (error) throw error
 
   return (
     <div>
