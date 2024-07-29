@@ -18,7 +18,7 @@ Honeybadger.configure({
     if (line.file) {
       line.file = line.file.replace(
         `${projectRoot}/.next/server`,
-        `${process.env.VERCEL_URL}/..`,
+        `${process.env.NEXT_PUBLIC_HONEYBADGER_ASSETS_URL}/..`,
       )
     }
     return line
