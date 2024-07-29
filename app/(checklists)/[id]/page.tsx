@@ -27,7 +27,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   const [locked, setLocked] = useState(true)
 
   const queryClient = useQueryClient()
-  const { isPending, isError, data, error, isSuccess } = useQuery({
+  const { isPending, data, error, isSuccess } = useQuery({
     queryKey: ["checklist", checklistID],
     queryFn: () => getChecklist(checklistID),
     staleTime: 1000 * 60 * 5, // 5 minutes,
@@ -163,9 +163,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
 
   if (isPending) return <div>Loading...</div>
 
-  if (isError) {
-    throw error
-  }
+  if (error) throw error
 
   return (
     <div>
