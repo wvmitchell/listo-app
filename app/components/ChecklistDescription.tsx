@@ -1,10 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { EllipsisVerticalIcon, LockClosedIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { deleteChecklist } from "@/utils/checklistAPI"
+import ConfirmDeleteDialog from "./ConfirmDeleteDialog"
 
 type ChecklistDescriptionProps = {
   key: any
@@ -20,6 +22,7 @@ const ChecklistDescription = ({
   locked,
   updated_at,
 }: ChecklistDescriptionProps) => {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const queryClient = useQueryClient()
   const deleteChecklistMutation = useMutation({
     mutationFn: (variables: { id: string }) => {
@@ -32,17 +35,8 @@ const ChecklistDescription = ({
 
   function handleDelete() {
     if (locked) return
+    setShowDeleteConfirm(false)
     deleteChecklistMutation.mutate({ id })
-  }
-
-  const project = {
-    id: "1",
-    name: "Project Apollo",
-    href: "#",
-    status: "Active",
-    dueDate: "Mar 20, 2020",
-    dueDateTime: "2020-03-20",
-    createdBy: "Dries Vincent",
   }
 
   function parseDate(date: string) {
@@ -87,7 +81,7 @@ const ChecklistDescription = ({
                 href={`/${id}`}
                 className="block px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
               >
-                View<span className="sr-only">, {project.name}</span>
+                View<span className="sr-only">, {title}</span>
               </a>
             </MenuItem>
             <MenuItem>
@@ -95,22 +89,28 @@ const ChecklistDescription = ({
                 href="#"
                 className="block px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
               >
-                Share<span className="sr-only">, {project.name}</span>
+                Share<span className="sr-only">, {title}</span>
               </a>
             </MenuItem>
             {!locked && (
               <MenuItem>
                 <span
-                  onClick={handleDelete}
+                  onClick={() => setShowDeleteConfirm(true)}
                   className="block cursor-pointer px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
                 >
-                  Delete<span className="sr-only">, {project.name}</span>
+                  Delete<span className="sr-only">, {title}</span>
                 </span>
               </MenuItem>
             )}
           </MenuItems>
         </Menu>
       </div>
+      <ConfirmDeleteDialog
+        title={title}
+        isOpen={showDeleteConfirm}
+        setShowDeleteConfirm={setShowDeleteConfirm}
+        handleDelete={handleDelete}
+      />
     </li>
   )
 }
