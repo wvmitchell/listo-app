@@ -47,9 +47,9 @@ const ConfirmDeleteDialog = ({
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                    Are you sure you want to delete this checklist? All of your
-                    data will be permanently removed. This action cannot be
-                    undone.
+                    Are you sure you want to delete this Listo? All of your
+                    items inside will be permanently removed. This action cannot
+                    be undone.
                   </p>
                 </div>
               </div>
