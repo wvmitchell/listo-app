@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
 import { debounce } from "lodash"
 import {
   createItem,
@@ -11,26 +12,36 @@ import {
   updateItem,
   deleteItem,
 } from "@/utils/checklistAPI"
-import ChecklistMenu from "./components/ChecklistMenu"
-import NewItemForm from "./components/NewItemForm"
-import ItemList from "./components/ItemList"
 import type { ChecklistItem } from "@/utils/types"
+import ShareDialog from "@/app/components/ShareDialog"
+import ChecklistMenu from "./ChecklistMenu"
+import NewItemForm from "./NewItemForm"
+import ItemList from "./ItemList"
 
 type ChecklistParams = {
   id: string
 }
 
-const Checklist = ({ params }: { params: ChecklistParams }) => {
+type ChecklistProps = {
+  params: ChecklistParams
+  shared: boolean
+}
+
+const Checklist = ({ params, shared }: ChecklistProps) => {
   const checklistID = params.id
   const [title, setTitle] = useState("")
   const [items, setItems] = useState<ChecklistItem[]>([])
   const [locked, setLocked] = useState(true)
+  const [showShareDialog, setShowShareDialog] = useState(false)
+  const router = useRouter()
 
   const queryClient = useQueryClient()
   const { isPending, data, error, isSuccess } = useQuery({
     queryKey: ["checklist", checklistID],
-    queryFn: () => getChecklist(checklistID),
+    queryFn: () => getChecklist(checklistID, shared),
     staleTime: 1000 * 60 * 5, // 5 minutes,
+    refetchInterval: 15000,
+    refetchIntervalInBackground: true,
   })
 
   const updateChecklistMutation = useMutation({
@@ -38,11 +49,13 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
       checklistID: string
       title: string
       locked: boolean
+      shared: boolean
     }) => {
       return updateChecklist(
         variables.checklistID,
         variables.title,
         variables.locked,
+        variables.shared,
       )
     },
     onSuccess: () => {
@@ -55,11 +68,13 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
       checklistID: string
       content: string
       ordering: number
+      shared: boolean
     }) => {
       return createItem(
         variables.checklistID,
         variables.content,
         variables.ordering,
+        variables.shared,
       )
     },
     onSuccess: () => {
@@ -74,6 +89,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
       checked: boolean
       content: string
       ordering: number
+      shared: boolean
     }) => {
       return updateItem(
         variables.checklistID,
@@ -81,6 +97,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
         variables.checked,
         variables.content,
         variables.ordering,
+        variables.shared,
       )
     },
     onSuccess: () => {
@@ -89,8 +106,16 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   })
 
   const toggleAllMutation = useMutation({
-    mutationFn: (variables: { checklistID: string; checked: boolean }) => {
-      return toggleAllItems(variables.checklistID, variables.checked)
+    mutationFn: (variables: {
+      checklistID: string
+      checked: boolean
+      shared: boolean
+    }) => {
+      return toggleAllItems(
+        variables.checklistID,
+        variables.checked,
+        variables.shared,
+      )
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklist"] })
@@ -98,10 +123,14 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
   })
 
   const deleteCompletedItemsMutation = useMutation({
-    mutationFn: (variables: { checklistID: string; itemIDs: string[] }) => {
+    mutationFn: (variables: {
+      checklistID: string
+      itemIDs: string[]
+      shared: boolean
+    }) => {
       return Promise.all(
         variables.itemIDs.map((id) => {
-          return deleteItem(variables.checklistID, id)
+          return deleteItem(variables.checklistID, id, shared)
         }),
       )
     },
@@ -112,11 +141,11 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
 
   const updateTitleCallback = useCallback(
     debounce((title: string, locked: boolean) => {
-      console.log("running")
       updateChecklistMutation.mutate({
         checklistID,
         title,
         locked,
+        shared,
       })
     }, 1000),
     [],
@@ -144,26 +173,32 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
       checklistID,
       content,
       ordering,
+      shared,
     })
   }
 
   function handleLockChecklist() {
     setLocked(!locked)
-    updateChecklistMutation.mutate({ checklistID, title, locked: !locked })
+    updateChecklistMutation.mutate({
+      checklistID,
+      title,
+      locked: !locked,
+      shared,
+    })
   }
 
   function handleToggleAll(toggle: boolean) {
-    toggleAllMutation.mutate({ checklistID, checked: toggle })
+    toggleAllMutation.mutate({ checklistID, checked: toggle, shared })
   }
 
   function handleDeleteCompleted() {
     let itemIDs = items.filter((item) => item.checked).map((item) => item.id)
-    deleteCompletedItemsMutation.mutate({ checklistID, itemIDs })
+    deleteCompletedItemsMutation.mutate({ checklistID, itemIDs, shared })
   }
 
   if (isPending) return <div>Loading...</div>
 
-  if (error) throw error
+  if (error) router.push("/")
 
   return (
     <div>
@@ -181,6 +216,7 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
           handleLockChecklist={handleLockChecklist}
           handleToggleAll={handleToggleAll}
           handleDeleteCompleted={handleDeleteCompleted}
+          setShowShareDialog={setShowShareDialog}
         />
       </div>
       <ItemList
@@ -189,8 +225,15 @@ const Checklist = ({ params }: { params: ChecklistParams }) => {
         updateItemMutation={updateItemMutation}
         checklistID={checklistID}
         setItems={setItems}
+        shared={shared}
       />
       {locked ? null : <NewItemForm handleNewItem={handleNewItem} />}
+      <ShareDialog
+        title={title}
+        showShareDialog={showShareDialog}
+        setShowShareDialog={setShowShareDialog}
+        checklistID={checklistID}
+      />
     </div>
   )
 }

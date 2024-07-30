@@ -2,7 +2,7 @@ import { getSession } from "@auth0/nextjs-auth0"
 import { redirect } from "next/navigation"
 import Image from "next/image"
 import logoWithTagline from "@/app/images/full_logo_with_tagline.png"
-import Auth0Link from "./auth0Link"
+import Auth0Link from "@/app/components/Auth0Link"
 
 const LoginPage = async () => {
   const session = await getSession()

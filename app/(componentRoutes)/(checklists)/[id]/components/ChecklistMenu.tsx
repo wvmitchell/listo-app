@@ -16,6 +16,7 @@ type ChecklistMenuProps = {
   handleLockChecklist: (locked: boolean) => void
   handleToggleAll: (toggle: boolean) => void
   handleDeleteCompleted: () => void
+  setShowShareDialog: (value: boolean) => void
 }
 
 function ChecklistMenu({
@@ -23,6 +24,7 @@ function ChecklistMenu({
   handleLockChecklist,
   handleToggleAll,
   handleDeleteCompleted,
+  setShowShareDialog,
 }: ChecklistMenuProps) {
   const menuItems: { [key: string]: { icon: any; action: () => void } } = {
     "Check All": {
@@ -35,7 +37,7 @@ function ChecklistMenu({
     },
     Share: {
       icon: UserPlusIcon,
-      action: () => console.log("Share"),
+      action: () => setShowShareDialog(true),
     },
   }
 
