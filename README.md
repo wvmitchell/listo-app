@@ -1,5 +1,5 @@
 ## Listo App
-Listo is a simple yet powerful task app that allows you to create, edit, reorder, and delete tasks. Additionally, you can share your tasks with others to collaborate on projects.
+Listo is a simple yet powerful task app that allows you to create, edit, reorder, and delete tasks. Additionally, you can share your tasks with others to collaborate on projects. (Sharing is currently under development)
 
 ## Listo is in beta!
 Listo is currently in beta. You're welcome to sign up and start using the app. If you have any feedback, please let me know!
