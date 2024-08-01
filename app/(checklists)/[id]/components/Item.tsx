@@ -107,7 +107,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
         </form>
       ) : (
         <p
-          className={`mx-4 ${locked ? "cursor-default" : "cursor-pointer"} min-w-10 whitespace-pre-wrap text-base`}
+          className={`mx-4 ${locked ? "cursor-default" : "cursor-pointer"} w-full min-w-10 whitespace-pre-wrap text-base`}
           onClick={handleClickItem}
         >
           {content}
