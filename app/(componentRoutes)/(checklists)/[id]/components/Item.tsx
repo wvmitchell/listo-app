@@ -11,9 +11,16 @@ type ItemProps = {
   item: ChecklistItem
   locked: boolean
   updateItemMutation: any
+  shared: boolean
 }
 
-function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
+function Item({
+  checklistID,
+  item,
+  locked,
+  updateItemMutation,
+  shared,
+}: ItemProps) {
   const [isChecked, setIsChecked] = useState(item.checked)
   const [content, setContent] = useState(item.content)
   const [updating, setUpdating] = useState(false)
@@ -27,6 +34,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
         checked: item.checked,
         content,
         ordering: item.ordering,
+        shared,
       })
     }, 500),
     [],
@@ -67,6 +75,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
       checked,
       content: item.content,
       ordering: item.ordering,
+      shared,
     })
   }
 

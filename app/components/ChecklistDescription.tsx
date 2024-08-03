@@ -7,6 +7,7 @@ import Link from "next/link"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { deleteChecklist } from "@/utils/checklistAPI"
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog"
+import ShareDialog from "./ShareDialog"
 
 type ChecklistDescriptionProps = {
   key: any
@@ -14,6 +15,7 @@ type ChecklistDescriptionProps = {
   title: string
   locked: boolean
   updated_at: string
+  shared: boolean
 }
 
 const ChecklistDescription = ({
@@ -21,8 +23,11 @@ const ChecklistDescription = ({
   title,
   locked,
   updated_at,
+  shared,
 }: ChecklistDescriptionProps) => {
+  const linkToChecklist = shared ? `/${id}/shared` : `/${id}`
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showShareDialog, setShowShareDialog] = useState(false)
   const queryClient = useQueryClient()
   const deleteChecklistMutation = useMutation({
     mutationFn: (variables: { id: string }) => {
@@ -34,7 +39,7 @@ const ChecklistDescription = ({
   })
 
   function handleDelete() {
-    if (locked) return
+    if (locked || shared) return
     setShowDeleteConfirm(false)
     deleteChecklistMutation.mutate({ id })
   }
@@ -49,7 +54,7 @@ const ChecklistDescription = ({
       key={id}
       className="mt-1 flex items-center justify-between rounded-sm bg-white p-3 hover:bg-slate-50"
     >
-      <Link className="w-full" href={`/${id}`}>
+      <Link className="w-full" href={linkToChecklist}>
         <div className="flex items-center gap-x-3">
           <p className="text-state-900 text-base font-semibold leading-6">
             {title}
@@ -78,28 +83,30 @@ const ChecklistDescription = ({
           >
             <MenuItem>
               <a
-                href={`/${id}`}
+                href={linkToChecklist}
                 className="block px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
               >
                 View<span className="sr-only">, {title}</span>
               </a>
             </MenuItem>
-            <MenuItem>
-              <a
-                href="#"
-                className="block px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
-              >
-                Share<span className="sr-only">, {title}</span>
-              </a>
-            </MenuItem>
-            {!locked && (
+            {!shared && (
               <MenuItem>
-                <span
+                <button
+                  onClick={() => setShowShareDialog(true)}
+                  className="block w-full px-3 py-1 text-left text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
+                >
+                  Share<span className="sr-only">, {title}</span>
+                </button>
+              </MenuItem>
+            )}
+            {!locked && !shared && (
+              <MenuItem>
+                <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="block cursor-pointer px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
+                  className="block w-full cursor-pointer px-3 py-1 text-left text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
                 >
                   Delete<span className="sr-only">, {title}</span>
-                </span>
+                </button>
               </MenuItem>
             )}
           </MenuItems>
@@ -110,6 +117,12 @@ const ChecklistDescription = ({
         isOpen={showDeleteConfirm}
         setShowDeleteConfirm={setShowDeleteConfirm}
         handleDelete={handleDelete}
+      />
+      <ShareDialog
+        title={title}
+        showShareDialog={showShareDialog}
+        setShowShareDialog={setShowShareDialog}
+        checklistID={id}
       />
     </li>
   )

@@ -20,7 +20,11 @@ const ConfirmDeleteDialog = ({
   setShowDeleteConfirm,
 }: ConfirmDeleteDialogProps) => {
   return (
-    <Dialog open={isOpen} onClose={() => {}} className="relative z-10">
+    <Dialog
+      open={isOpen}
+      onClose={setShowDeleteConfirm}
+      className="relative z-10"
+    >
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-slate-500 bg-opacity-75 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
@@ -48,8 +52,8 @@ const ConfirmDeleteDialog = ({
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
                     Are you sure you want to delete this Listo? All of your
-                    items inside will be permanently removed. This action cannot
-                    be undone.
+                    items inside will be permanently removed. Anyone you've
+                    shared it with will also lose access. This cannot be undone.
                   </p>
                 </div>
               </div>
