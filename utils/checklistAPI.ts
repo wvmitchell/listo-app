@@ -1,6 +1,11 @@
 "use server"
 
 import { getAuth0Token } from "./sessionUtils"
+import Honeybadger from "@honeybadger-io/js"
+
+Honeybadger.configure({
+  apiKey: process.env.HONEYBADGER_API_KEY,
+})
 
 /**
  * Fetches all checklists for the current user.
@@ -22,10 +27,12 @@ async function getChecklists() {
     cache: "no-store",
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to get checklists: ${body.message}`))
     throw new Error(`Failed to get checklists: ${res.status}`)
   }
-  return await res.json()
+  return body
 }
 
 /**
@@ -48,10 +55,14 @@ async function getSharedChecklists() {
     cache: "no-store",
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(
+      new Error(`Failed to get shared checklists: ${body.message}`),
+    )
     throw new Error(`Failed to get shared checklists: ${res.status}`)
   }
-  return await res.json()
+  return body
 }
 
 /**
@@ -78,10 +89,12 @@ async function getChecklist(checklistID: string, shared = false) {
     },
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to get checklist: ${body.message}`))
     throw new Error(`Failed to get checklist: ${res.status}`)
   }
-  return await res.json()
+  return body
 }
 
 /**
@@ -104,11 +117,13 @@ async function createChecklist() {
     body: JSON.stringify({ title: "New Listo (click to edit)" }),
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to create checklist: ${body.message}`))
     throw new Error(`Failed to create checklist: ${res.status}`)
   }
 
-  return await res.json()
+  return body
 }
 
 /**
@@ -143,11 +158,12 @@ async function updateChecklist(
     body: JSON.stringify({ title, locked }),
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to update checklist: ${body.message}`))
     throw new Error(`Failed to update checklist: ${res.status}`)
   }
-
-  return await res.json()
+  return body
 }
 
 /**
@@ -170,11 +186,13 @@ async function deleteChecklist(checklistID: string) {
     },
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to delete checklist: ${body.message}`))
     throw new Error(`Failed to delete checklist: ${res.status}`)
   }
 
-  return await res.json()
+  return body
 }
 
 /**
@@ -200,11 +218,13 @@ async function getChecklistShareCode(checklistID: string) {
     },
   )
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to get share code: ${body.message}`))
     throw new Error(`Failed to get share link: ${res.status}`)
   }
 
-  return await res.json()
+  return body
 }
 
 /**
@@ -230,11 +250,15 @@ async function addUserToSharedList(shortCode: string) {
     },
   )
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(
+      new Error(`Failed to add user to shared list: ${body.message}`),
+    )
     throw new Error(`Failed to add user to shared list: ${res.status}`)
   }
 
-  return await res.json()
+  return body
 }
 
 /**
@@ -269,10 +293,12 @@ async function createItem(
     body: JSON.stringify({ content, ordering }),
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to create item: ${body.message}`))
     throw new Error(`Failed to create item: ${res.status}`)
   }
-  return await res.json()
+  return body
 }
 
 /**
@@ -311,10 +337,12 @@ async function updateItem(
     body: JSON.stringify({ content, checked, ordering }),
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to update item: ${body.message}`))
     throw new Error(`Failed to update item: ${res.status}`)
   }
-  return await res.json()
+  return body
 }
 
 /**
@@ -346,11 +374,12 @@ async function toggleAllItems(
     },
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to toggle all items: ${body.message}`))
     throw new Error(`Failed to toggle all items: ${res.status}`)
   }
-
-  return await res.json()
+  return body
 }
 
 /**
@@ -382,11 +411,12 @@ async function deleteItem(
     },
   })
 
+  const body = await res.json()
   if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to delete item: ${body.message}`))
     throw new Error(`Failed to delete item: ${res.status}`)
   }
-
-  return await res.json()
+  return body
 }
 
 export {
