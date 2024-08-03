@@ -76,7 +76,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
   }
 
   function handleClickItem() {
-    if (locked) return
+    if (locked || isChecked) return
     setUpdating(true)
   }
 
@@ -107,7 +107,7 @@ function Item({ checklistID, item, locked, updateItemMutation }: ItemProps) {
         </form>
       ) : (
         <p
-          className={`mx-4 ${locked ? "cursor-default" : "cursor-pointer"} w-full min-w-10 whitespace-pre-wrap text-base`}
+          className={`mx-4 ${locked || isChecked ? "cursor-default" : "cursor-pointer"} w-full min-w-10 whitespace-pre-wrap text-base ${isChecked ? "italic text-gray-400 line-through" : ""}`}
           onClick={handleClickItem}
         >
           {content}
