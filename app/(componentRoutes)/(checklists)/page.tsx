@@ -77,7 +77,9 @@ const ChecklistsPage = () => {
           />
         ))}
       </ul>
-      <div className="mt-4 flex flex-row items-end justify-between">
+      <div
+        className={`mt-4 flex flex-row items-end justify-between ${shraredChecklists.length ? "" : "hidden"}`}
+      >
         <h2 className="text-lg font-semibold">Shared With Me</h2>
       </div>
       <ul role="list">
