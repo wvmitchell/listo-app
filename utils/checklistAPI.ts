@@ -196,6 +196,37 @@ async function deleteChecklist(checklistID: string) {
 }
 
 /**
+ * Removes a user from a shared checklist.
+ * @param checklistID The ID of the checklist.
+ * @returns A message indicating success.
+ * @throws Error if the request fails.
+ * @example
+ * ```typescript
+ * const message = await leaveSharedChecklist("123")
+ * ```
+ */
+async function leaveSharedChecklist(checklistID: string) {
+  const token = await getAuth0Token()
+  const res = await fetch(
+    `${process.env.BASE_URL}/checklist/${checklistID}/shared/user`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+
+  const body = await res.json()
+  if (!res.ok) {
+    Honeybadger.notify(new Error(`Failed to leave checklist: ${body.message}`))
+    throw new Error(`Failed to leave checklist: ${res.status}`)
+  }
+  return body
+}
+
+/**
  * Fetches a share code for a checklist.
  * @param checklistID The ID of the checklist.
  * @returns The share code.
@@ -426,6 +457,7 @@ export {
   createChecklist,
   updateChecklist,
   deleteChecklist,
+  leaveSharedChecklist,
   getChecklistShareCode,
   addUserToSharedList,
   createItem,

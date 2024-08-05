@@ -5,9 +5,11 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { EllipsisVerticalIcon, LockClosedIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
-import { deleteChecklist } from "@/utils/checklistAPI"
+import { deleteChecklist, leaveSharedChecklist } from "@/utils/checklistAPI"
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog"
 import ShareDialog from "./ShareDialog"
+import LeaveDialog from "./LeaveDialog"
+import type { Checklist } from "@/utils/types"
 
 type ChecklistDescriptionProps = {
   key: any
@@ -28,6 +30,7 @@ const ChecklistDescription = ({
   const linkToChecklist = shared ? `/${id}/shared` : `/${id}`
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showShareDialog, setShowShareDialog] = useState(false)
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
   const queryClient = useQueryClient()
   const deleteChecklistMutation = useMutation({
     mutationFn: (variables: { id: string }) => {
@@ -38,10 +41,42 @@ const ChecklistDescription = ({
     },
   })
 
+  const leaveSharedListMutation = useMutation({
+    mutationFn: (variables: { id: string }) => {
+      return leaveSharedChecklist(variables.id)
+    },
+    onMutate: (variables: { id: string }) => {
+      // do optimistic update removing shared list from cache
+      // to avoid waiting for the server response
+      const previousData = queryClient.getQueryData(["sharedChecklists"])
+
+      queryClient.setQueryData(
+        ["sharedChecklists"],
+        (oldData: { checklists: Checklist[] }) => {
+          const nextValues = oldData?.checklists.filter(
+            (checklist) => checklist.id !== variables.id,
+          )
+          return { checklists: nextValues }
+        },
+      )
+
+      return { previousData }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sharedChecklists"] })
+    },
+  })
+
   function handleDelete() {
     if (locked || shared) return
     setShowDeleteConfirm(false)
     deleteChecklistMutation.mutate({ id })
+  }
+
+  function handleLeave() {
+    if (!shared) return
+    setShowLeaveConfirm(false)
+    leaveSharedListMutation.mutate({ id })
   }
 
   function parseDate(date: string) {
@@ -109,6 +144,16 @@ const ChecklistDescription = ({
                 </button>
               </MenuItem>
             )}
+            {shared && (
+              <MenuItem>
+                <button
+                  onClick={() => setShowLeaveConfirm(true)}
+                  className="block w-full cursor-pointer px-3 py-1 text-left text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
+                >
+                  Leave<span className="sr-only">, {title}</span>
+                </button>
+              </MenuItem>
+            )}
           </MenuItems>
         </Menu>
       </div>
@@ -123,6 +168,12 @@ const ChecklistDescription = ({
         showShareDialog={showShareDialog}
         setShowShareDialog={setShowShareDialog}
         checklistID={id}
+      />
+      <LeaveDialog
+        title={title}
+        showLeaveConfirm={showLeaveConfirm}
+        setShowLeaveConfirm={setShowLeaveConfirm}
+        handleLeave={handleLeave}
       />
     </li>
   )
