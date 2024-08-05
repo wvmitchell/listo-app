@@ -10,6 +10,13 @@ import { useQuery } from "@tanstack/react-query"
 import ChecklistsOptionsMenu from "@/app/components/ChecklistsOptionsMenu"
 import ChecklistDescription from "@/app/components/ChecklistDescription"
 
+type Checklist = {
+  id: string
+  title: string
+  locked: boolean
+  updated_at: string
+}
+
 const ChecklistsPage = () => {
   const [checklists, setChecklists] = useState([])
   const [shraredChecklists, setSharedChecklists] = useState([])
@@ -41,7 +48,10 @@ const ChecklistsPage = () => {
 
   useEffect(() => {
     if (isSuccess && data) {
-      setChecklists(data.checklists)
+      const checklists = data.checklists.sort((a: Checklist, b: Checklist) => {
+        return new Date(a.updated_at) < new Date(b.updated_at) ? 1 : -1
+      })
+      setChecklists(checklists)
     }
   }, [data, isSuccess])
 
