@@ -26,7 +26,7 @@ const ChecklistsPage = () => {
     error: sharedDataError,
     isSuccess: sharedDataIsSuccess,
   } = useQuery({
-    queryKey: ["shareedChecklists"],
+    queryKey: ["sharedChecklists"],
     queryFn: async () => {
       const shortCode = sessionStorage.getItem("shortCode")
       if (shortCode) {
@@ -51,7 +51,7 @@ const ChecklistsPage = () => {
 
   useEffect(() => {
     if (sharedDataIsSuccess && sharedData) {
-      setSharedChecklists(sharedData["shared checklists"])
+      setSharedChecklists(sharedData.checklists)
     }
   }, [sharedData, sharedDataIsSuccess])
 
