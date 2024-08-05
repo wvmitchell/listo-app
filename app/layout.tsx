@@ -21,7 +21,7 @@ export default function RootLayout({
         <body>
           <Analytics />
           <SpeedInsights />
-          <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
             {children}
           </div>
         </body>

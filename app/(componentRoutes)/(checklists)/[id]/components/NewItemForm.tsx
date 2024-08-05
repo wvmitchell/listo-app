@@ -49,7 +49,7 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
 
   return (
     <div
-      className={`mb-4 mt-1 grid grid-cols-[auto_1fr] items-center rounded-sm bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-10"} min-h-12`}
+      className={`mt-1 grid grid-cols-[auto_1fr] items-center rounded-sm bg-white shadow-sm transition-width delay-150 ease-in-out ${formOpen ? "w-full" : "w-10"} min-h-12`}
       onTransitionEnd={handleTranistionEnd}
     >
       <button className="pl-2 pr-[8px]" onClick={handleFormToggle}>
