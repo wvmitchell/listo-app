@@ -33,9 +33,7 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
   }
 
   return (
-    <div
-      className={`mt-1 grid min-h-12 w-full grid-cols-[auto_1fr] items-center rounded-sm bg-white shadow-sm`}
-    >
+    <div className="mt-1 grid min-h-12 w-full grid-cols-[auto_1fr] items-center rounded-sm bg-white shadow-sm">
       <PlusCircleIcon className="mx-2 size-[24px] text-slate-700" />
       <form
         ref={formRef}
