@@ -9,13 +9,7 @@ import {
 import { useQuery } from "@tanstack/react-query"
 import ChecklistsOptionsMenu from "@/app/components/ChecklistsOptionsMenu"
 import ChecklistDescription from "@/app/components/ChecklistDescription"
-
-type Checklist = {
-  id: string
-  title: string
-  locked: boolean
-  updated_at: string
-}
+import type { Checklist } from "@/utils/types"
 
 const ChecklistsPage = () => {
   const [checklists, setChecklists] = useState([])
