@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import { PlusCircleIcon } from "@heroicons/react/24/outline"
 import { checkForEnter } from "@/utils/domUtils"
 
@@ -10,6 +10,10 @@ const NewItemForm = ({ handleNewItem }: NewItemFormProps) => {
   const [content, setContent] = useState("")
   const textareaRef = useRef<HTMLSpanElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
+
+  useEffect(() => {
+    textareaRef.current?.focus()
+  }, [textareaRef])
 
   function handleSpanInput(e: React.FormEvent<HTMLSpanElement>) {
     let span = e.target as HTMLSpanElement
