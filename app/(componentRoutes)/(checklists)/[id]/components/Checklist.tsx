@@ -77,6 +77,21 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
         variables.shared,
       )
     },
+    onMutate: (variables: {
+      checklistID: string
+      content: string
+      ordering: number
+      shared: boolean
+    }) => {
+      const previousData = queryClient.getQueryData(["checklist", checklistID])
+
+      queryClient.setQueryData(["checklist", checklistID], (oldData: any) => {
+        const nextValues = [...oldData.items, { ...variables, id: "temp" }]
+        return { ...oldData, items: nextValues }
+      })
+
+      return { previousData }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklist"] })
     },
