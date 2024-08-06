@@ -36,6 +36,21 @@ const ChecklistDescription = ({
     mutationFn: (variables: { id: string }) => {
       return deleteChecklist(variables.id)
     },
+    onMutate: (variables: { id: string }) => {
+      const previousData = queryClient.getQueryData(["checklists"])
+
+      queryClient.setQueryData(
+        ["checklists"],
+        (oldData: { checklists: Checklist[] }) => {
+          const nextValues = oldData?.checklists.filter(
+            (checklist) => checklist.id !== variables.id,
+          )
+          return { checklists: nextValues }
+        },
+      )
+
+      return { previousData }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklists"] })
     },
