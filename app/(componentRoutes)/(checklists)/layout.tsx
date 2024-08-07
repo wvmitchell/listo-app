@@ -25,7 +25,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Header />
+      <Header user={user} isLoading={isLoading} />
       {children}
     </QueryClientProvider>
   )

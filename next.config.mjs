@@ -2,6 +2,14 @@ import { setupHoneybadger } from "@honeybadger-io/nextjs"
 
 const nextConfig = {
   productionBrowserSourceMaps: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "s.gravatar.com",
+      },
+    ],
+  },
 }
 
 const honeybadgerNextJsConfig = {
