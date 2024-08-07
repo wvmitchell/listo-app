@@ -9,14 +9,14 @@ import type { UserProfile } from "@auth0/nextjs-auth0/client"
 import fullLogo from "@/app/images/full_logo.png"
 
 type HeaderProps = {
-  user: UserProfile | undefined
-  isLoading: boolean
+  user?: UserProfile | undefined
+  isLoading?: boolean
 }
 
 function Header({ user, isLoading }: HeaderProps) {
   return (
     <div
-      className={`my-4 flex flex-row justify-between ${isLoading ? "hidden" : ""}`}
+      className={`my-4 flex flex-row justify-between ${isLoading || !user ? "hidden" : ""}`}
     >
       <Link href="/">
         <Image src={fullLogo} width={50} height={50} alt="Listo" />
