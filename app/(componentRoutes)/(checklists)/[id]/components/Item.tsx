@@ -99,7 +99,7 @@ function Item({
         id={item.id}
         onChange={toggleItem}
         checked={isChecked}
-        className="blur:ring-0 mt-1 h-4 w-4 rounded border-gray-300 text-slate-600 focus:ring-slate-600"
+        className="blur:ring-0 mt-1 h-4 w-4 rounded border-gray-300 text-gray-600 focus:ring-gray-600"
       />
       {updating ? (
         <form onSubmit={() => setUpdating(false)} className="m-0 w-full">
@@ -127,7 +127,7 @@ function Item({
         data-move-icon
       >
         <Bars2Icon
-          className="h-6 w-12 cursor-move text-slate-500"
+          className="h-6 w-12 cursor-move text-gray-500"
           aria-hidden="true"
           data-move-icon
         />

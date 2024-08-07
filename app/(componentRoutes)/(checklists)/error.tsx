@@ -20,7 +20,7 @@ const ErrorPage = ({ error }: ErrorPageProps) => {
       <div className="mt-2 flex flex-row justify-center">
         <a
           href="/api/auth/logout"
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-center font-semibold hover:bg-slate-50"
+          className="rounded-md border border-gray-300 bg-white px-3 py-2 text-center font-semibold hover:bg-gray-50"
         >
           Login
         </a>

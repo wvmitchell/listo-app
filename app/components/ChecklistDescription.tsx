@@ -102,7 +102,7 @@ const ChecklistDescription = ({
   return (
     <li
       key={id}
-      className="mt-1 flex items-center justify-between rounded-sm bg-white p-3 hover:bg-slate-50"
+      className="mt-1 flex items-center justify-between rounded-sm bg-white p-3 hover:bg-gray-50"
     >
       <Link className="w-full" href={linkToChecklist}>
         <div className="flex items-center gap-x-3">
@@ -111,7 +111,7 @@ const ChecklistDescription = ({
           </p>
           {locked && (
             <span className="mb-1 ml-1">
-              <LockClosedIcon className="h-4 w-4 text-slate-500" />
+              <LockClosedIcon className="h-4 w-4 text-gray-500" />
             </span>
           )}
         </div>
@@ -123,18 +123,18 @@ const ChecklistDescription = ({
       </Link>
       <div className="flex flex-none items-center gap-x-4">
         <Menu as="div" className="relative flex-none">
-          <MenuButton className="-m-2.5 block p-2.5 text-slate-500 hover:text-slate-900">
+          <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
             <span className="sr-only">Open options</span>
             <EllipsisVerticalIcon aria-hidden="true" className="h-5 w-5" />
           </MenuButton>
           <MenuItems
             transition
-            className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-slate-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+            className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
           >
             <MenuItem>
               <a
                 href={linkToChecklist}
-                className="block px-3 py-1 text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
+                className="block px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
               >
                 View<span className="sr-only">, {title}</span>
               </a>
@@ -143,7 +143,7 @@ const ChecklistDescription = ({
               <MenuItem>
                 <button
                   onClick={() => setShowShareDialog(true)}
-                  className="block w-full px-3 py-1 text-left text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
+                  className="block w-full px-3 py-1 text-left text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
                 >
                   Share<span className="sr-only">, {title}</span>
                 </button>
@@ -153,7 +153,7 @@ const ChecklistDescription = ({
               <MenuItem>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="block w-full cursor-pointer px-3 py-1 text-left text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
+                  className="block w-full cursor-pointer px-3 py-1 text-left text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
                 >
                   Delete<span className="sr-only">, {title}</span>
                 </button>
@@ -163,7 +163,7 @@ const ChecklistDescription = ({
               <MenuItem>
                 <button
                   onClick={() => setShowLeaveConfirm(true)}
-                  className="block w-full cursor-pointer px-3 py-1 text-left text-sm leading-6 text-slate-900 data-[focus]:bg-slate-50"
+                  className="block w-full cursor-pointer px-3 py-1 text-left text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
                 >
                   Leave<span className="sr-only">, {title}</span>
                 </button>
