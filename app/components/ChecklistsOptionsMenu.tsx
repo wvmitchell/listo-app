@@ -1,11 +1,7 @@
 "use client"
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
-import {
-  ChevronDownIcon,
-  PencilSquareIcon,
-  ArrowRightStartOnRectangleIcon,
-} from "@heroicons/react/24/solid"
+import { ChevronDownIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
 import { useRouter } from "next/navigation"
 import { createChecklist } from "@/utils/checklistAPI"
 
