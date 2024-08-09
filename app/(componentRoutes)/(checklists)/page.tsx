@@ -30,8 +30,8 @@ const ChecklistsPage = () => {
     queryFn: async () => {
       const shortCode = sessionStorage.getItem("shortCode")
       if (shortCode) {
-        await addUserToSharedList(shortCode)
         sessionStorage.removeItem("shortCode")
+        await addUserToSharedList(shortCode)
       }
 
       return await getSharedChecklists()
