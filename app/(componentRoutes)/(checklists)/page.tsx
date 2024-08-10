@@ -36,7 +36,6 @@ const ChecklistsPage = () => {
 
       return await getSharedChecklists()
     },
-    refetchInterval: 15000,
     staleTime: 0,
   })
 
