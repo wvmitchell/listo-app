@@ -40,7 +40,6 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
     queryKey: ["checklist", checklistID],
     queryFn: () => getChecklist(checklistID, shared),
     staleTime: 1000 * 60 * 5, // 5 minutes,
-    refetchInterval: 30000,
   })
 
   const updateChecklistMutation = useMutation({
