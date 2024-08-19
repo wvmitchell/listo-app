@@ -12,7 +12,7 @@ const afterCallback = (req: NextApiRequest, session: Session) => {
   // return the session data
   if (session.user) {
     const { sub, email, picture } = session.user
-    const token = session.accessToken
+    const token = session.accessToken || ""
     createOrUpdateUser({ sub, email, picture, token })
   }
 
