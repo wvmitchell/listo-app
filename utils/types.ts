@@ -11,5 +11,11 @@ export type Checklist = {
   id: string
   title: string
   locked: boolean
+  collaborators: Collaborator[]
   updated_at: string
+}
+
+export type Collaborator = {
+  email: string
+  picture: string
 }

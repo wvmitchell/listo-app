@@ -6,16 +6,19 @@ import { EllipsisVerticalIcon, LockClosedIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { deleteChecklist, leaveSharedChecklist } from "@/utils/checklistAPI"
+import { useUser } from "@auth0/nextjs-auth0/client"
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog"
 import ShareDialog from "./ShareDialog"
 import LeaveDialog from "./LeaveDialog"
-import type { Checklist } from "@/utils/types"
+import CollaboratorsMenu from "./CollaboratorsMenu"
+import type { Checklist, Collaborator } from "@/utils/types"
 
 type ChecklistDescriptionProps = {
   key: any
   id: string
   title: string
   locked: boolean
+  collaborators: Collaborator[]
   updated_at: string
   shared: boolean
 }
@@ -26,11 +29,13 @@ const ChecklistDescription = ({
   locked,
   updated_at,
   shared,
+  collaborators,
 }: ChecklistDescriptionProps) => {
   const linkToChecklist = shared ? `/${id}/shared` : `/${id}`
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showShareDialog, setShowShareDialog] = useState(false)
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
+  const { user } = useUser()
   const queryClient = useQueryClient()
   const deleteChecklistMutation = useMutation({
     mutationFn: (variables: { id: string }) => {
@@ -121,6 +126,15 @@ const ChecklistDescription = ({
           </p>
         </div>
       </Link>
+      {user?.email && (
+        <div className="pr-4">
+          <CollaboratorsMenu
+            checklistID={id}
+            collaborators={collaborators}
+            userEmailAddress={user.email}
+          />
+        </div>
+      )}
       <div className="flex flex-none items-center gap-x-4">
         <Menu as="div" className="relative flex-none">
           <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
