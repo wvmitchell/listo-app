@@ -71,6 +71,7 @@ const ChecklistsPage = () => {
             id={checklist.id}
             title={checklist.title}
             locked={checklist.locked}
+            collaborators={checklist.collaborators}
             shared={false}
             updated_at={checklist.updated_at}
           />
@@ -88,6 +89,7 @@ const ChecklistsPage = () => {
             id={checklist.id}
             title={checklist.title}
             locked={checklist.locked}
+            collaborators={checklist.collaborators}
             shared={true}
             updated_at={checklist.updated_at}
           />
