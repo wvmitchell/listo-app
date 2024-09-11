@@ -5,15 +5,18 @@ import {
   ArrowRightStartOnRectangleIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline"
-import type { UserProfile } from "@auth0/nextjs-auth0/client"
+import type { User } from "@/utils/types"
+import { useAuth } from "@/app/context/AuthContext"
 import fullLogo from "@/app/images/full_logo.png"
 
 type HeaderProps = {
-  user?: UserProfile | undefined
+  user?: User | null
   isLoading?: boolean
 }
 
-function Header({ user, isLoading }: HeaderProps) {
+function Header() {
+  const { user, isLoading, handleLogout } = useAuth()
+
   return (
     <div
       className={`my-4 flex flex-row justify-between ${isLoading || !user ? "hidden" : ""}`}
@@ -50,13 +53,13 @@ function Header({ user, isLoading }: HeaderProps) {
               <MenuItem>
                 <div>
                   <p className="block cursor-default px-4 py-2 text-sm font-semibold text-gray-700">
-                    Hi {user?.name || user?.email}!
+                    Hi {user?.email}!
                   </p>
                 </div>
               </MenuItem>
               <MenuItem>
-                <a
-                  href="/api/auth/logout"
+                <button
+                  onClick={handleLogout}
                   className="group flex items-center px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                 >
                   <ArrowRightStartOnRectangleIcon
@@ -64,7 +67,7 @@ function Header({ user, isLoading }: HeaderProps) {
                     className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                   />
                   Logout
-                </a>
+                </button>
               </MenuItem>
             </div>
           </MenuItems>

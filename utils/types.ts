@@ -19,3 +19,8 @@ export type Collaborator = {
   email: string
   picture: string
 }
+
+export type User = {
+  email: string
+  picture: string
+}

@@ -1,29 +1,50 @@
-import { getSession } from "@auth0/nextjs-auth0"
-import { redirect } from "next/navigation"
+"use client"
+
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import logoWithTagline from "@/app/images/full_logo_with_tagline.png"
-import Auth0Link from "@/app/components/Auth0Link"
+import LoginForm from "@/app/components/LoginForm"
+import { login } from "@/utils/auth"
+import { addUserToSharedList } from "@/utils/checklistAPI"
+import { useAuth } from "@/app/context/AuthContext"
 
-const LoginPage = async () => {
-  const session = await getSession()
-  const user = session?.user
+const LoginPage = () => {
+  const { setToken } = useAuth()
+  const router = useRouter()
 
-  if (user) {
-    redirect("/")
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    const email = data.get("email") as string
+    const password = data.get("password") as string
+    const result = await login({
+      email,
+      password,
+    })
+
+    if (result.success) {
+      const token = localStorage.getItem("jwt")
+      const shortCode = sessionStorage.getItem("shortCode")
+      if (shortCode) {
+        sessionStorage.removeItem("shortCode")
+        await addUserToSharedList(shortCode, token)
+      }
+      if (!token) return
+      setToken(token)
+      router.push("/")
+    }
   }
 
   return (
-    !user && (
-      <div className="flex h-[80vh] flex-col items-center justify-center">
-        <Image
-          src={logoWithTagline}
-          width={200}
-          height={200}
-          alt="Listo. Get it done together."
-        />
-        <Auth0Link />
-      </div>
-    )
+    <div className="flex h-[80vh] flex-col items-center justify-center">
+      <Image
+        src={logoWithTagline}
+        width={200}
+        height={200}
+        alt="Listo. Get it done together."
+      />
+      <LoginForm handleLogin={handleLogin} />
+    </div>
   )
 }
 

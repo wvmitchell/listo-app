@@ -1,42 +1,22 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {
-  getChecklists,
-  getSharedChecklists,
-  addUserToSharedList,
-} from "@/utils/checklistAPI"
+import { getChecklists } from "@/utils/checklistAPI"
 import { useQuery } from "@tanstack/react-query"
 import ChecklistsOptionsMenu from "@/app/components/ChecklistsOptionsMenu"
 import ChecklistDescription from "@/app/components/ChecklistDescription"
+import { useAuth } from "@/app/context/AuthContext"
 import type { Checklist } from "@/utils/types"
 
 const ChecklistsPage = () => {
   const [checklists, setChecklists] = useState([])
-  const [shraredChecklists, setSharedChecklists] = useState([])
+  const [sharedChecklists, setSharedChecklists] = useState([])
+  const { token } = useAuth()
   const { data, isPending, error, isSuccess } = useQuery({
     queryKey: ["checklists"],
-    queryFn: () => getChecklists(),
+    queryFn: () => getChecklists(token),
     staleTime: 0,
-  })
-
-  const {
-    data: sharedData,
-    isPending: sharedDataIsPending,
-    error: sharedDataError,
-    isSuccess: sharedDataIsSuccess,
-  } = useQuery({
-    queryKey: ["sharedChecklists"],
-    queryFn: async () => {
-      const shortCode = sessionStorage.getItem("shortCode")
-      if (shortCode) {
-        sessionStorage.removeItem("shortCode")
-        await addUserToSharedList(shortCode)
-      }
-
-      return await getSharedChecklists()
-    },
-    staleTime: 0,
+    refetchInterval: 1000 * 60 * 5, // 5 minutes
   })
 
   useEffect(() => {
@@ -44,19 +24,19 @@ const ChecklistsPage = () => {
       const checklists = data.checklists.sort((a: Checklist, b: Checklist) => {
         return new Date(a.updated_at) < new Date(b.updated_at) ? 1 : -1
       })
+      const shared_checklists = data.shared_checklists.sort(
+        (a: Checklist, b: Checklist) => {
+          return new Date(a.updated_at) < new Date(b.updated_at) ? 1 : -1
+        },
+      )
+
       setChecklists(checklists)
+      setSharedChecklists(shared_checklists)
     }
   }, [data, isSuccess])
 
-  useEffect(() => {
-    if (sharedDataIsSuccess && sharedData) {
-      setSharedChecklists(sharedData.checklists)
-    }
-  }, [sharedData, sharedDataIsSuccess])
-
-  if (isPending || sharedDataIsPending) return <div>Loading...</div>
+  if (isPending) return <div>Loading...</div>
   if (error) throw error
-  if (sharedDataError) throw sharedDataError
 
   return (
     <div>
@@ -78,12 +58,12 @@ const ChecklistsPage = () => {
         ))}
       </ul>
       <div
-        className={`mt-4 flex flex-row items-end justify-between ${shraredChecklists.length ? "" : "hidden"}`}
+        className={`mt-4 flex flex-row items-end justify-between ${sharedChecklists.length ? "" : "hidden"}`}
       >
         <h2 className="text-lg font-semibold">Shared With Me</h2>
       </div>
       <ul role="list">
-        {shraredChecklists.map((checklist: { [key: string]: any }) => (
+        {sharedChecklists.map((checklist: { [key: string]: any }) => (
           <ChecklistDescription
             key={checklist.id}
             id={checklist.id}

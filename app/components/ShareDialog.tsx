@@ -10,6 +10,7 @@ import {
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline"
 import { Honeybadger } from "@honeybadger-io/react"
 import { getChecklistShareCode } from "@/utils/checklistAPI"
+import { useAuth } from "@/app/context/AuthContext"
 
 type ShareDialogProps = {
   title: string
@@ -27,12 +28,13 @@ const ShareDialog = ({
   const defaultText = "Get Sharable Link"
   const [shareText, setShareText] = useState(defaultText)
   const [shareLink, setShareLink] = useState("")
+  const { token } = useAuth()
 
   const getShareLink = async () => {
     try {
       setShareText("One moment...")
-      const { code } = await getChecklistShareCode(checklistID)
-      setShareLink(`${process.env.NEXT_PUBLIC_URL}/share/${code}`)
+      const { shortcode } = await getChecklistShareCode(checklistID, token)
+      setShareLink(`${process.env.NEXT_PUBLIC_URL}/share/${shortcode}`)
       setShareText("Click to Copy")
     } catch (error) {
       Honeybadger.notify(error as Error)

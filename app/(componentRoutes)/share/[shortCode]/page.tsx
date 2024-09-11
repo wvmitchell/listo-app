@@ -1,9 +1,8 @@
 "use client"
 
-import { useUser } from "@auth0/nextjs-auth0/client"
 import { useRouter } from "next/navigation"
 import { addUserToSharedList } from "@/utils/checklistAPI"
-import Auth0Link from "@/app/components/Auth0Link"
+import { useAuth } from "@/app/context/AuthContext"
 import { useEffect } from "react"
 
 type SharePageProps = {
@@ -12,23 +11,22 @@ type SharePageProps = {
 
 const SharePage = ({ params }: SharePageProps) => {
   const shortCode = params.shortCode
-  const { user, isLoading } = useUser()
+  const { user, isLoading, token } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
     if (!isLoading && user) {
-      addUserToSharedList(shortCode)
+      addUserToSharedList(shortCode, token)
       router.push("/")
     } else {
       sessionStorage.setItem("shortCode", shortCode)
     }
-  }, [user, isLoading, router, shortCode])
+  }, [user, isLoading, router, shortCode, token])
 
   return (
     <div>
       <h1>Someone has shared a Listo with you!</h1>
       <p>Login or Create an account to view it</p>
-      <Auth0Link />
     </div>
   )
 }

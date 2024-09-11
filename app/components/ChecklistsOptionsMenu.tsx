@@ -4,12 +4,15 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { ChevronDownIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
 import { useRouter } from "next/navigation"
 import { createChecklist } from "@/utils/checklistAPI"
+import { useAuth } from "@/app/context/AuthContext"
 
 const ChecklistsOptionsMenu = () => {
   const router = useRouter()
+  const { token } = useAuth()
 
   async function handleNewChecklist() {
-    let { checklist } = await createChecklist()
+    if (!token) return
+    let checklist = await createChecklist(token)
     router.push(`/${checklist.id}`)
   }
 

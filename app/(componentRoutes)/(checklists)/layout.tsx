@@ -2,30 +2,26 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useUser } from "@auth0/nextjs-auth0/client"
-import { Honeybadger } from "@honeybadger-io/react"
+import { useAuth } from "@/app/context/AuthContext"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import Header from "@/app/components/Header"
 const queryClient = new QueryClient()
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useUser()
+  const { isLoading, token } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isLoading && !token) {
       router.push("/login")
-    } else if (user) {
-      Honeybadger.setContext({
-        user_id: user.sub,
-        user_email: user.email,
-      })
     }
-  }, [isLoading, user, router])
+  }, [router, token, isLoading])
+
+  if (!token) return null
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Header user={user} isLoading={isLoading} />
+      <Header />
       {children}
     </QueryClientProvider>
   )

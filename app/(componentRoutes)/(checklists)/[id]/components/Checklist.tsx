@@ -7,12 +7,12 @@ import { debounce } from "lodash"
 import {
   createItem,
   getChecklist,
-  toggleAllItems,
   updateChecklist,
   updateItem,
   deleteItem,
 } from "@/utils/checklistAPI"
 import type { ChecklistItem } from "@/utils/types"
+import { useAuth } from "@/app/context/AuthContext"
 import ShareDialog from "@/app/components/ShareDialog"
 import ChecklistMenu from "./ChecklistMenu"
 import NewItemForm from "./NewItemForm"
@@ -24,22 +24,23 @@ type ChecklistParams = {
 
 type ChecklistProps = {
   params: ChecklistParams
-  shared: boolean
 }
 
-const Checklist = ({ params, shared }: ChecklistProps) => {
+const Checklist = ({ params }: ChecklistProps) => {
   const checklistID = params.id
   const [title, setTitle] = useState("")
   const [items, setItems] = useState<ChecklistItem[]>([])
   const [locked, setLocked] = useState(true)
   const [showShareDialog, setShowShareDialog] = useState(false)
+  const { token } = useAuth()
   const router = useRouter()
 
   const queryClient = useQueryClient()
   const { isPending, data, error, isSuccess } = useQuery({
     queryKey: ["checklist", checklistID],
-    queryFn: () => getChecklist(checklistID, shared),
+    queryFn: () => getChecklist(checklistID, token),
     staleTime: 1000 * 60 * 5, // 5 minutes,
+    refetchInterval: 1000 * 10, // 10 seconds
   })
 
   const updateChecklistMutation = useMutation({
@@ -47,13 +48,12 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
       checklistID: string
       title: string
       locked: boolean
-      shared: boolean
     }) => {
       return updateChecklist(
         variables.checklistID,
         variables.title,
         variables.locked,
-        variables.shared,
+        token,
       )
     },
     onSuccess: () => {
@@ -66,24 +66,23 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
       checklistID: string
       content: string
       ordering: number
-      shared: boolean
     }) => {
       return createItem(
         variables.checklistID,
         variables.content,
         variables.ordering,
-        variables.shared,
+        token,
       )
     },
     onMutate: (variables: {
       checklistID: string
       content: string
       ordering: number
-      shared: boolean
     }) => {
       const previousData = queryClient.getQueryData(["checklist", checklistID])
 
       queryClient.setQueryData(["checklist", checklistID], (oldData: any) => {
+        console.log("oldData", oldData)
         const nextValues = [...oldData.items, { ...variables, id: "temp" }]
         return { ...oldData, items: nextValues }
       })
@@ -102,7 +101,6 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
       checked: boolean
       content: string
       ordering: number
-      shared: boolean
     }) => {
       return updateItem(
         variables.checklistID,
@@ -110,8 +108,34 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
         variables.checked,
         variables.content,
         variables.ordering,
-        variables.shared,
+        token,
       )
+    },
+    onMutate: (variables: {
+      checklistID: string
+      itemID: string
+      checked: boolean
+      content: string
+      ordering: number
+    }) => {
+      const previousData = queryClient.getQueryData(["checklist", checklistID])
+
+      queryClient.setQueryData(["checklist", checklistID], (oldData: any) => {
+        const nextValues = oldData.items.map((item: ChecklistItem) => {
+          if (item.id === variables.itemID) {
+            return {
+              ...item,
+              checked: variables.checked,
+              content: variables.content,
+              ordering: variables.ordering,
+            }
+          }
+          return item
+        })
+        return { ...oldData, items: nextValues }
+      })
+
+      return { previousData }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklist"] })
@@ -121,13 +145,20 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
   const toggleAllMutation = useMutation({
     mutationFn: (variables: {
       checklistID: string
+      items: ChecklistItem[]
       checked: boolean
-      shared: boolean
     }) => {
-      return toggleAllItems(
-        variables.checklistID,
-        variables.checked,
-        variables.shared,
+      return Promise.all(
+        items.map((item) => {
+          return updateItem(
+            variables.checklistID,
+            item.id,
+            variables.checked,
+            item.content,
+            item.ordering,
+            token,
+          )
+        }),
       )
     },
     onSuccess: () => {
@@ -138,12 +169,11 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
   const deleteCompletedItemsMutation = useMutation({
     mutationFn: (variables: {
       checklistID: string
-      itemIDs: string[]
-      shared: boolean
+      items: ChecklistItem[]
     }) => {
       return Promise.all(
-        variables.itemIDs.map((id) => {
-          return deleteItem(variables.checklistID, id, shared)
+        variables.items.map((item) => {
+          return deleteItem(variables.checklistID, item.id, token)
         }),
       )
     },
@@ -158,7 +188,6 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
         checklistID,
         title,
         locked,
-        shared,
       })
     }, 1000),
     [],
@@ -166,8 +195,8 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
 
   useEffect(() => {
     if (isSuccess && data) {
-      setTitle(data.checklist.title)
-      setLocked(data.checklist.locked)
+      setTitle(data.title)
+      setLocked(data.locked)
       let sorted = data.items.sort(
         (a: ChecklistItem, b: ChecklistItem) => a.ordering - b.ordering,
       )
@@ -186,7 +215,6 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
       checklistID,
       content,
       ordering,
-      shared,
     })
   }
 
@@ -196,17 +224,19 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
       checklistID,
       title,
       locked: !locked,
-      shared,
     })
   }
 
   function handleToggleAll(toggle: boolean) {
-    toggleAllMutation.mutate({ checklistID, checked: toggle, shared })
+    toggleAllMutation.mutate({ checklistID, items, checked: toggle })
   }
 
   function handleDeleteCompleted() {
-    let itemIDs = items.filter((item) => item.checked).map((item) => item.id)
-    deleteCompletedItemsMutation.mutate({ checklistID, itemIDs, shared })
+    let completed = items.filter((item) => item.checked)
+    deleteCompletedItemsMutation.mutate({
+      checklistID,
+      items: completed,
+    })
   }
 
   if (isPending) return <div>Loading...</div>
@@ -238,7 +268,6 @@ const Checklist = ({ params, shared }: ChecklistProps) => {
         updateItemMutation={updateItemMutation}
         checklistID={checklistID}
         setItems={setItems}
-        shared={shared}
       />
       {locked ? null : <NewItemForm handleNewItem={handleNewItem} />}
       <ShareDialog

@@ -6,11 +6,11 @@ import { EllipsisVerticalIcon, LockClosedIcon } from "@heroicons/react/24/solid"
 import Link from "next/link"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { deleteChecklist, leaveSharedChecklist } from "@/utils/checklistAPI"
-import { useUser } from "@auth0/nextjs-auth0/client"
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog"
 import ShareDialog from "./ShareDialog"
 import LeaveDialog from "./LeaveDialog"
 import CollaboratorsMenu from "./CollaboratorsMenu"
+import { useAuth } from "@/app/context/AuthContext"
 import type { Checklist, Collaborator } from "@/utils/types"
 
 type ChecklistDescriptionProps = {
@@ -31,26 +31,32 @@ const ChecklistDescription = ({
   shared,
   collaborators,
 }: ChecklistDescriptionProps) => {
-  const linkToChecklist = shared ? `/${id}/shared` : `/${id}`
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showShareDialog, setShowShareDialog] = useState(false)
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
-  const { user } = useUser()
+  const { user, token } = useAuth()
   const queryClient = useQueryClient()
   const deleteChecklistMutation = useMutation({
     mutationFn: (variables: { id: string }) => {
-      return deleteChecklist(variables.id)
+      return deleteChecklist(variables.id, token)
     },
     onMutate: (variables: { id: string }) => {
       const previousData = queryClient.getQueryData(["checklists"])
 
       queryClient.setQueryData(
         ["checklists"],
-        (oldData: { checklists: Checklist[] }) => {
-          const nextValues = oldData?.checklists.filter(
+        (oldData: {
+          checklists: Checklist[]
+          shared_checklists: Checklist[]
+        }) => {
+          const nextChecklists = oldData?.checklists.filter(
             (checklist) => checklist.id !== variables.id,
           )
-          return { checklists: nextValues }
+          const nextSharedChecklists = oldData?.shared_checklists
+          return {
+            checklists: nextChecklists,
+            shared_checklists: nextSharedChecklists,
+          }
         },
       )
 
@@ -63,27 +69,32 @@ const ChecklistDescription = ({
 
   const leaveSharedListMutation = useMutation({
     mutationFn: (variables: { id: string }) => {
-      return leaveSharedChecklist(variables.id)
+      return leaveSharedChecklist(variables.id, token)
     },
     onMutate: (variables: { id: string }) => {
-      // do optimistic update removing shared list from cache
-      // to avoid waiting for the server response
-      const previousData = queryClient.getQueryData(["sharedChecklists"])
+      const previousData = queryClient.getQueryData(["checklists"])
 
       queryClient.setQueryData(
-        ["sharedChecklists"],
-        (oldData: { checklists: Checklist[] }) => {
-          const nextValues = oldData?.checklists.filter(
+        ["checklists"],
+        (oldData: {
+          checklists: Checklist[]
+          shared_checklists: Checklist[]
+        }) => {
+          const nextChecklists = oldData?.checklists
+          const nextSharedChecklists = oldData?.shared_checklists.filter(
             (checklist) => checklist.id !== variables.id,
           )
-          return { checklists: nextValues }
+          return {
+            checklists: nextChecklists,
+            shared_checklists: nextSharedChecklists,
+          }
         },
       )
 
       return { previousData }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["sharedChecklists"] })
+      queryClient.invalidateQueries({ queryKey: ["checklists"] })
     },
   })
 
@@ -109,7 +120,7 @@ const ChecklistDescription = ({
       key={id}
       className="mt-1 flex items-center justify-between rounded-sm bg-white p-3 hover:bg-gray-50"
     >
-      <Link className="w-full" href={linkToChecklist}>
+      <Link className="w-full" href={`/${id}`}>
         <div className="flex items-center gap-x-3">
           <p className="text-state-900 text-base font-semibold leading-6">
             {title}
@@ -147,7 +158,7 @@ const ChecklistDescription = ({
           >
             <MenuItem>
               <a
-                href={linkToChecklist}
+                href={`/${id}`}
                 className="block px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
               >
                 View<span className="sr-only">, {title}</span>

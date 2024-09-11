@@ -1,6 +1,5 @@
 "use server"
 
-import { getAuth0Token } from "./sessionUtils"
 import Honeybadger from "@honeybadger-io/js"
 
 Honeybadger.configure({
@@ -9,6 +8,7 @@ Honeybadger.configure({
 
 /**
  * Fetches all checklists for the current user.
+ * @param token The user's access token.
  * @returns An array of checklists.
  * @throws Error if the request fails.
  * @example
@@ -16,8 +16,7 @@ Honeybadger.configure({
  * const checklists = await getChecklists()
  * ```
  */
-async function getChecklists() {
-  const token = await getAuth0Token()
+async function getChecklists(token: string | null) {
   const res = await fetch(`${process.env.BASE_URL}/checklists`, {
     method: "GET",
     headers: {
@@ -36,39 +35,9 @@ async function getChecklists() {
 }
 
 /**
- * Fetches all shared checklists for the current user.
- * @returns An array of shared checklists.
- * @throws Error if the request fails.
- * @example
- * ```typescript
- * const sharedChecklists = await getSharedChecklists()
- * ```
- */
-async function getSharedChecklists() {
-  const token = await getAuth0Token()
-  const res = await fetch(`${process.env.BASE_URL}/checklists/shared`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  })
-
-  const body = await res.json()
-  if (!res.ok) {
-    Honeybadger.notify(
-      new Error(`Failed to get shared checklists: ${body.message}`),
-    )
-    throw new Error(`Failed to get shared checklists: ${res.status}`)
-  }
-  return body
-}
-
-/**
  * Fetches a checklist by ID.
  * @param checklistID The ID of the checklist.
- * @param shared Whether the checklist is a shared checklist.
+ * @param token The user's access token.
  * @returns The checklist.
  * @throws Error if the request fails.
  * @example
@@ -76,11 +45,8 @@ async function getSharedChecklists() {
  * const checklist = await getChecklist("123")
  * ```
  */
-async function getChecklist(checklistID: string, shared = false) {
-  const token = await getAuth0Token()
-  const path = shared
-    ? `/checklist/${checklistID}/shared`
-    : `/checklist/${checklistID}`
+async function getChecklist(checklistID: string, token: string | null) {
+  const path = `/checklists/${checklistID}`
   const res = await fetch(`${process.env.BASE_URL}${path}`, {
     method: "GET",
     headers: {
@@ -94,11 +60,12 @@ async function getChecklist(checklistID: string, shared = false) {
     Honeybadger.notify(new Error(`Failed to get checklist: ${body.message}`))
     throw new Error(`Failed to get checklist: ${res.status}`)
   }
-  return body
+  return body.checklist
 }
 
 /**
  * Creates a new checklist.
+ * @param token The user's access token.
  * @returns The new checklist.
  * @throws Error if the request fails.
  * @example
@@ -106,9 +73,8 @@ async function getChecklist(checklistID: string, shared = false) {
  * const checklist = await createChecklist()
  * ```
  */
-async function createChecklist() {
-  const token = await getAuth0Token()
-  const res = await fetch(`${process.env.BASE_URL}/checklist`, {
+async function createChecklist(token: string | null) {
+  const res = await fetch(`${process.env.BASE_URL}/checklists`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -131,7 +97,7 @@ async function createChecklist() {
  * @param checklistID The ID of the checklist.
  * @param title The new title of the checklist.
  * @param locked Whether the checklist is locked.
- * @param shared Whether the checklist is a shared checklist.
+ * @param token The user's access token.
  * @returns The updated checklist.
  * @throws Error if the request fails.
  * @example
@@ -143,12 +109,9 @@ async function updateChecklist(
   checklistID: string,
   title: string,
   locked: boolean,
-  shared: boolean = false,
+  token: string | null,
 ) {
-  const token = await getAuth0Token()
-  const path = shared
-    ? `/checklist/${checklistID}/shared`
-    : `/checklist/${checklistID}`
+  const path = `/checklists/${checklistID}`
   const res = await fetch(`${process.env.BASE_URL}${path}`, {
     method: "PUT",
     headers: {
@@ -169,6 +132,7 @@ async function updateChecklist(
 /**
  * Deletes a checklist.
  * @param checklistID The ID of the checklist.
+ * @param token The user's access token.
  * @returns The deleted checklist.
  * @throws Error if the request fails.
  * @example
@@ -176,9 +140,8 @@ async function updateChecklist(
  * const checklist = await deleteChecklist("123")
  * ```
  */
-async function deleteChecklist(checklistID: string) {
-  const token = await getAuth0Token()
-  const res = await fetch(`${process.env.BASE_URL}/checklist/${checklistID}`, {
+async function deleteChecklist(checklistID: string, token: string | null) {
+  const res = await fetch(`${process.env.BASE_URL}/checklists/${checklistID}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -205,10 +168,9 @@ async function deleteChecklist(checklistID: string) {
  * const message = await leaveSharedChecklist("123")
  * ```
  */
-async function leaveSharedChecklist(checklistID: string) {
-  const token = await getAuth0Token()
+async function leaveSharedChecklist(checklistID: string, token: string | null) {
   const res = await fetch(
-    `${process.env.BASE_URL}/checklist/${checklistID}/shared/user`,
+    `${process.env.BASE_URL}/checklists/${checklistID}/share`,
     {
       method: "DELETE",
       headers: {
@@ -236,10 +198,12 @@ async function leaveSharedChecklist(checklistID: string) {
  * const shareCode = await getChecklistShareCode("123")
  * ```
  */
-async function getChecklistShareCode(checklistID: string) {
-  const token = await getAuth0Token()
+async function getChecklistShareCode(
+  checklistID: string,
+  token: string | null,
+) {
   const res = await fetch(
-    `${process.env.BASE_URL}/checklist/${checklistID}/share`,
+    `${process.env.BASE_URL}/checklists/${checklistID}/share`,
     {
       method: "GET",
       headers: {
@@ -268,10 +232,9 @@ async function getChecklistShareCode(checklistID: string) {
  * const checklist = await addUserToSharedList("abc123")
  * ```
  */
-async function addUserToSharedList(shortCode: string) {
-  const token = await getAuth0Token()
+async function addUserToSharedList(shortCode: string, token: string | null) {
   const res = await fetch(
-    `${process.env.BASE_URL}/checklist/share/${shortCode}`,
+    `${process.env.BASE_URL}/checklists/share/${shortCode}`,
     {
       method: "POST",
       headers: {
@@ -297,7 +260,6 @@ async function addUserToSharedList(shortCode: string) {
  * @param checklistID The ID of the checklist.
  * @param content The content of the item.
  * @param ordering The order of the item.
- * @param shared Whether the checklist is a shared checklist.
  * @returns The new item.
  * @throws Error if the request fails.
  * @example
@@ -309,12 +271,9 @@ async function createItem(
   checklistID: string,
   content: string,
   ordering: number,
-  shared: boolean = false,
+  token: string | null,
 ) {
-  const token = await getAuth0Token()
-  const path = shared
-    ? `/checklist/${checklistID}/shared/item`
-    : `/checklist/${checklistID}/item`
+  const path = `/checklists/${checklistID}/items`
   const res = await fetch(`${process.env.BASE_URL}${path}`, {
     method: "POST",
     headers: {
@@ -339,7 +298,6 @@ async function createItem(
  * @param checked Whether the item is checked.
  * @param content The content of the item.
  * @param ordering The order of the item.
- * @param shared Whether the checklist is a shared checklist.
  * @returns A message indicating success.
  * @throws Error if the request fails.
  * @example
@@ -353,12 +311,9 @@ async function updateItem(
   checked: boolean,
   content: string,
   ordering: number,
-  shared: boolean = false,
+  token: string | null,
 ) {
-  const token = await getAuth0Token()
-  const path = shared
-    ? `/checklist/${checklistID}/shared/item/${itemID}`
-    : `/checklist/${checklistID}/item/${itemID}`
+  const path = `/checklists/${checklistID}/items/${itemID}`
   const res = await fetch(`${process.env.BASE_URL}${path}`, {
     method: "PUT",
     headers: {
@@ -377,47 +332,9 @@ async function updateItem(
 }
 
 /**
- * Toggles all items in a checklist.
- * @param checklistID The ID of the checklist.
- * @param checked Whether the items should be checked.
- * @param shared Whether the checklist is a shared checklist.
- * @returns A message indicating success.
- * @throws Error if the request fails.
- * @example
- * ```typescript
- * const checklist = await toggleAllItems("123", true)
- * ```
- */
-async function toggleAllItems(
-  checklistID: string,
-  checked: boolean,
-  shared: boolean = false,
-) {
-  const token = await getAuth0Token()
-  const path = shared
-    ? `/checklist/${checklistID}/shared/items`
-    : `/checklist/${checklistID}/items`
-  const res = await fetch(`${process.env.BASE_URL}${path}?checked=${checked}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-
-  const body = await res.json()
-  if (!res.ok) {
-    Honeybadger.notify(new Error(`Failed to toggle all items: ${body.message}`))
-    throw new Error(`Failed to toggle all items: ${res.status}`)
-  }
-  return body
-}
-
-/**
  * Deletes an item from a checklist.
  * @param checklistID The ID of the checklist.
  * @param itemID The ID of the item to delete.
- * @param shared Whether the checklist is is a shared checklist.
  * @returns A message indicating success.
  * @throws Error if the request fails.
  * @example
@@ -428,12 +345,9 @@ async function toggleAllItems(
 async function deleteItem(
   checklistID: string,
   itemID: string,
-  shared: boolean = false,
+  token: string | null,
 ) {
-  const token = await getAuth0Token()
-  const path = shared
-    ? `/checklist/${checklistID}/shared/item/${itemID}`
-    : `/checklist/${checklistID}/item/${itemID}`
+  const path = `/checklists/${checklistID}/items/${itemID}`
   const res = await fetch(`${process.env.BASE_URL}${path}`, {
     method: "DELETE",
     headers: {
@@ -452,7 +366,6 @@ async function deleteItem(
 
 export {
   getChecklists,
-  getSharedChecklists,
   getChecklist,
   createChecklist,
   updateChecklist,
@@ -462,6 +375,5 @@ export {
   addUserToSharedList,
   createItem,
   updateItem,
-  toggleAllItems,
   deleteItem,
 }

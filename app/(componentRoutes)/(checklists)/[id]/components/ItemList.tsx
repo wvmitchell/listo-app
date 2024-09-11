@@ -10,7 +10,6 @@ type ItemListProps = {
   checklistID: string
   updateItemMutation: any
   setItems: (items: ChecklistItem[]) => void
-  shared: boolean
 }
 
 const ItemList = ({
@@ -19,7 +18,6 @@ const ItemList = ({
   checklistID,
   updateItemMutation,
   setItems,
-  shared,
 }: ItemListProps) => {
   // Note: draggingIndex is used when reordering is happening in a desktop environment.
   // touchedItem is used when reordering is happening in a touch environment (mobile).
@@ -49,7 +47,6 @@ const ItemList = ({
             ordering: index,
             checked: item.checked,
             content: item.content,
-            shared,
           })
           item.ordering = index
         }
@@ -256,7 +253,6 @@ const ItemList = ({
             checklistID={checklistID}
             item={item}
             locked={locked}
-            shared={shared}
           />
         </div>
       ))}
