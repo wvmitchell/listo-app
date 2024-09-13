@@ -6,17 +6,15 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline"
 import type { User } from "@/utils/types"
-import { useAuth } from "@/app/context/AuthContext"
 import fullLogo from "@/app/images/full_logo.png"
 
 type HeaderProps = {
   user?: User | null
   isLoading?: boolean
+  handleLogout: () => void
 }
 
-function Header() {
-  const { user, isLoading, handleLogout } = useAuth()
-
+function Header({ user, isLoading, handleLogout }: HeaderProps) {
   return (
     <div
       className={`my-4 flex flex-row justify-between ${isLoading || !user ? "hidden" : ""}`}

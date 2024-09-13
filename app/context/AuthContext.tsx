@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const storedToken = getToken()
     if (storedToken) {
       setToken(storedToken)
-      parseUser(storedToken)
+      setUser(parseUser(storedToken))
       setIsLoading(false)
     }
   }, [])
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         })
         .join(""),
     )
-    setUser(JSON.parse(jsonPayload))
+    return JSON.parse(jsonPayload)
   }
 
   return (

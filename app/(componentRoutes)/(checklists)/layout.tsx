@@ -8,7 +8,7 @@ import Header from "@/app/components/Header"
 const queryClient = new QueryClient()
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { isLoading, token } = useAuth()
+  const { user, isLoading, token, handleLogout } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Header />
+      <Header user={user} isLoading={isLoading} handleLogout={handleLogout} />
       {children}
     </QueryClientProvider>
   )
