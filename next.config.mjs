@@ -9,7 +9,7 @@ const nextConfig = {
         hostname: "s.gravatar.com",
       },
       {
-        protocol: "http",
+        protocol: "https",
         hostname: "gravatar.com",
       },
     ],
